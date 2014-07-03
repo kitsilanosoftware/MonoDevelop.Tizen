@@ -47,10 +47,16 @@ namespace MonoDevelop.MeeGo
 				return Path.GetFileNameWithoutExtension (Config.OutputAssembly);
 			}
 		}
-		
+
+		public string DeviceProjectPath {
+			get {
+				return Config.ParentItem.Name;
+			}
+		}
+
 		public string DeviceExePath {
 			get {
-				return Config.ParentItem.Name + "/" + Config.CompiledOutputName.FileName;
+				return DeviceProjectPath + "/" + Config.CompiledOutputName.FileName;
 			}
 		}
 	}
