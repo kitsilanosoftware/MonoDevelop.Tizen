@@ -76,17 +76,21 @@ namespace MonoDevelop.MeeGo
 			string exec = GetCommandString (cmd, sdbOptions, xauth);
 			
 			var ssh = new LiveSshExec (device.Address, device.Username, device.Password);
+			var port = device.Port;
 			
 			//hacky but openssh seems to ignore signals
 			Action kill = delegate {
 				var killExec = new SshExec (device.Address, device.Username, device.Password);
-				killExec.Connect ();
+				if (port == 0)
+					killExec.Connect ();
+				else
+					killExec.Connect (port);
 				killExec.RunCommand ("ps x | grep '" + cmd.DeviceExePath + "' | " +
 					"grep -v 'grep \\'" + cmd.DeviceExePath + "\\' | awk '{ print $1 }' | xargs kill ");
 				killExec.Close ();
 			};
 			
-			return new SshRemoteProcess (ssh, 0, exec, stdOut, stdErr, kill);
+			return new SshRemoteProcess (ssh, port, exec, stdOut, stdErr, kill);
 		}
 		
 		public static string GetCommandString (MeeGoExecutionCommand cmd, string sdbOptions, Dictionary<string,string> auth)

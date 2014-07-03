@@ -49,7 +49,7 @@ namespace MonoDevelop.MeeGo
 			for (int i = 0; i < files.Length; i++)
 				files[i] = op.Combine (files[i]);
 			
-			var scop = new SshTransferOperation<Sftp> (sftp, 0, delegate (Sftp s) {
+			var scop = new SshTransferOperation<Sftp> (sftp, targetDevice.Port, delegate (Sftp s) {
 				var dir = conf.ParentItem.Name;
 				try {
 					s.Mkdir (dir);
