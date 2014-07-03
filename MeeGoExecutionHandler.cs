@@ -86,7 +86,7 @@ namespace MonoDevelop.MeeGo
 				killExec.Close ();
 			};
 			
-			return new SshRemoteProcess (ssh, exec, stdOut, stdErr, kill);
+			return new SshRemoteProcess (ssh, 0, exec, stdOut, stdErr, kill);
 		}
 		
 		public static string GetCommandString (MeeGoExecutionCommand cmd, string sdbOptions, Dictionary<string,string> auth)
@@ -145,9 +145,9 @@ namespace MonoDevelop.MeeGo
 		Action kill;
 		Action<string> stdOut, stdErr;
 		
-		public SshRemoteProcess (LiveSshExec ssh, string command,
+		public SshRemoteProcess (LiveSshExec ssh, ushort port, string command,
 		                         Action<string> stdOut, Action<string> stdErr, Action kill) 
-			: base (ssh)
+			: base (ssh, port)
 		{
 			this.command = command;
 			this.kill = kill;

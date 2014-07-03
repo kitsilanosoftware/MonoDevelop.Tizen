@@ -34,11 +34,13 @@ namespace MonoDevelop.MeeGo
 	public abstract class SshOperation<T> : IAsyncOperation where T : SshBase
 	{
 		T ssh;
+		ushort port;
 		ManualResetEvent wait = new ManualResetEvent (false);
 		
-		public SshOperation (T ssh)
+		public SshOperation (T ssh, ushort port)
 		{
 			this.ssh = ssh;
+			this.port = port;
 		}
 		
 		protected T Ssh { get { return ssh; } }
@@ -50,7 +52,10 @@ namespace MonoDevelop.MeeGo
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					ssh.Connect ();
+					if (port == 0)
+						ssh.Connect ();
+					else
+						ssh.Connect (port);
 					RunOperations ();
 					Success = true;
 				} catch (Exception ex) {
@@ -88,7 +93,7 @@ namespace MonoDevelop.MeeGo
 	{
 		Action<T> action;
 		
-		public SshTransferOperation (T ssh, Action<T> action) : base (ssh)
+		public SshTransferOperation (T ssh, ushort port, Action<T> action) : base (ssh, port)
 		{
 			this.action = action;
 		}
