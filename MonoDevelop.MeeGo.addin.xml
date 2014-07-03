@@ -26,6 +26,11 @@
 		                 file     = "Templates/MeeGoGtkProject.xpt.xml" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id       = "TizenNativeConsoleProject"
+		                 file     = "Templates/TizenNativeConsoleProject.xpt.xml" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{3fd4c4e6-4e66-4b72-9776-a9d37f06ace0}"

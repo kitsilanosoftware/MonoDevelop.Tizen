@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2014 Kitsilano Software Inc.
+
+  This file is part of MonoTizen.
+
+  MonoTizen is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  MonoTizen is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with MonoTizen.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<Template originator   = "Kitsilano Software Inc."
+	  created      = "2014/07/03"
+	  lastModified = "2014/07/03">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Tizen Native Console Project</_Name>
+		<_Category>C#/Tizen</_Category>
+		<Icon>md-project</Icon>
+		<LanguageName>C#</LanguageName>
+		<_Description>A console project for Tizen.</_Description>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Main.cs"/>
+	</Actions>
+
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name = "${ProjectName}" directory = "." type = "MeeGo">
+			<Options Target = "WinExe"/>
+
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+			</References>
+
+			<Files>
+
+				<!-- The main class -->
+
+				<File name="Main.cs" AddStandardHeader="True">
+<![CDATA[using System;
+
+namespace ${Namespace}
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			Console.WriteLine("Hello, Tizen!");
+		}
+	}
+}]]>
+				</File>
+
+				<File name="Main.c" AddStandardHeader="True">
+<![CDATA[#include <mono/jit/jit.h>
+#include <mono/metadata/environment.h>
+#include <stdlib.h>
+
+static void
+main_function (MonoDomain *domain, const char *file, int argc, char** argv)
+{
+	MonoAssembly *assembly;
+
+	assembly = mono_domain_assembly_open (domain, file);
+	if (!assembly)
+		exit (2);
+	/*
+	 * mono_jit_exec() will run the Main() method in the assembly.
+	 * The return value needs to be looked up from
+	 * System.Environment.ExitCode.
+	 */
+	mono_jit_exec (domain, assembly, argc, argv);
+}
+
+
+int
+main(int argc, char* argv[]) {
+	MonoDomain *domain;
+	const char *file;
+	int retval;
+
+	file = "${Namespace}.exe";
+
+	/*
+	 * Load the default Mono configuration file, this is needed
+	 * if you are planning on using the dllmaps defined on the
+	 * system configuration
+	 */
+	mono_config_parse (NULL);
+	/*
+	 * mono_jit_init() creates a domain: each assembly is
+	 * loaded and run in a MonoDomain.
+	 */
+	domain = mono_jit_init (file);
+
+	main_function (domain, file, argc, argv);
+
+	retval = mono_environment_exitcode_get ();
+
+	mono_jit_cleanup (domain);
+	return retval;
+}]]>
+
+				</File>
+
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>

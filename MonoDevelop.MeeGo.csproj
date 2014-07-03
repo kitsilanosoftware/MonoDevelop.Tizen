@@ -96,6 +96,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <LogicalName>MeeGoGtkProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\TizenNativeConsoleProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <LogicalName>TizenNativeConsoleProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MeeGoSoftDebuggerEngine.cs" />
