@@ -55,7 +55,7 @@ namespace MonoDevelop.MeeGo
 			}
 			
 			//if (MeeGoUtility.NeedsUploading (cmd.Config)) {
-				MeeGoUtility.Upload (targetDevice, cmd.Config, console.Out, console.Error).WaitForCompleted ();
+				MeeGoUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error).WaitForCompleted ();
 			//}
 
 			// Cf. GetGdmXAuth below.  We don't need X

@@ -60,7 +60,7 @@ namespace MonoDevelop.MeeGo
 		
 		void StartProcess (MeeGoSoftDebuggerStartInfo dsi)
 		{
-			MeeGoUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null).WaitForCompleted ();
+			MeeGoUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null).WaitForCompleted ();
 			var auth = MeeGoExecutionHandler.GetGdmXAuth (dsi.Device);
 			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dra.Address, dra.DebugPort);

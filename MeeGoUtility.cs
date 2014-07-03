@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
@@ -39,22 +40,26 @@ namespace MonoDevelop.MeeGo
 	static class MeeGoUtility
 	{
 		//FIXME: needs better file list and handling of subdirectories
-		public static IAsyncOperation Upload (MeeGoDevice targetDevice, MeeGoProjectConfiguration conf, 
-		                                     TextWriter outWriter, TextWriter errorWriter)
+		public static IAsyncOperation Upload (MeeGoDevice targetDevice, MeeGoProjectConfiguration conf,
+						      string[] extraFiles,
+						      TextWriter outWriter, TextWriter errorWriter)
 		{
 			var sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
 			
-			var files = Directory.GetFiles (conf.OutputDirectory, "*", SearchOption.TopDirectoryOnly);
+			var outDirFiles = Directory.GetFiles (conf.OutputDirectory, "*", SearchOption.TopDirectoryOnly);
 			var op = conf.OutputDirectory.ParentDirectory;
-			for (int i = 0; i < files.Length; i++)
-				files[i] = op.Combine (files[i]);
+			var files = new List<string> ();
+			for (int i = 0; i < outDirFiles.Length; i++)
+				files.Add (op.Combine (outDirFiles[i]));
+			if (extraFiles != null)
+				files.AddRange (extraFiles);
 			
 			var scop = new SshTransferOperation<Sftp> (sftp, targetDevice.Port, delegate (Sftp s) {
 				var dir = conf.ParentItem.Name;
 				try {
 					s.Mkdir (dir);
 				} catch {}
-				s.Put (files, dir);
+				s.Put (files.ToArray (), dir);
 			});
 			scop.Run ();
 			return scop;
