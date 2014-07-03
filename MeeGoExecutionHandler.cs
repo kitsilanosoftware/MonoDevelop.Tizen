@@ -177,7 +177,8 @@ namespace MonoDevelop.MeeGo
 		
 		public override void Cancel ()
 		{
-			kill ();
+			if (kill != null)
+				kill ();
 			
 			channel.sendSignal ("TERM");
 			channel.disconnect ();

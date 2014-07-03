@@ -113,6 +113,8 @@
     <Compile Include="SshOperation.cs" />
     <Compile Include="MeeGoExecutionModeSet.cs" />
     <Compile Include="MeeGoSoftDebuggerSession.cs" />
+    <Compile Include="TizenExecutionModeSet.cs" />
+    <Compile Include="TizenNativeExecutionHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

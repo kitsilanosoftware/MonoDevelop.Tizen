@@ -48,6 +48,7 @@
 
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<ModeSetType class="MonoDevelop.MeeGo.MeeGoExecutionModeSet"/>
+		<ModeSetType class="MonoDevelop.MeeGo.TizenExecutionModeSet"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
