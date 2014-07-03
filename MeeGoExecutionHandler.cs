@@ -57,13 +57,10 @@ namespace MonoDevelop.MeeGo
 			//if (MeeGoUtility.NeedsUploading (cmd.Config)) {
 				MeeGoUtility.Upload (targetDevice, cmd.Config, console.Out, console.Error).WaitForCompleted ();
 			//}
-			
-			var auth = GetGdmXAuth (targetDevice);
-			if (auth == null) {
-				console.Error.WriteLine ("Could not obtain single X authority for user '" + targetDevice.Username +"'");
-				return new NullProcessAsyncOperation (false);
-			}
-			
+
+			// Cf. GetGdmXAuth below.  We don't need X
+			// auth for now.
+			Dictionary<string,string> auth = null;
 			var proc = CreateProcess (cmd, null, targetDevice, auth, console.Out.Write, console.Error.Write);
 			proc.Run ();
 			return proc;
@@ -102,8 +99,9 @@ namespace MonoDevelop.MeeGo
 			var sb = new StringBuilder ();
 			foreach (var arg in cmd.EnvironmentVariables)
 				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
-			foreach (var arg in auth)
-				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
+			if (auth != null)
+				foreach (var arg in auth)
+					sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
 			sb.Append ("mono");
 			if (!string.IsNullOrEmpty (sdbOptions))
 				sb.AppendFormat (" --debug --debugger-agent={0}", sdbOptions);
