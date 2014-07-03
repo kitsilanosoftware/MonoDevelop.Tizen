@@ -81,17 +81,36 @@ namespace MonoDevelop.MeeGo
 	{
 		public MeeGoDevice (string address, string username, string password)
 		{
+			ushort port;
+			MaybeSplitHostPort (ref address, out port);
+
 			this.Address = address;
+			this.Port = port;
 			this.Username = username;
 			this.Password = password;
-		}		
+		}
 		
 		public string Address  { get; set; }
+		public ushort Port     { get; set; }
 		public string Username { get; set; }
 		public string Password { get; set; }
-		
-		
-		
+
+		private static void MaybeSplitHostPort (ref string address,
+							out ushort port)
+		{
+			port = 0;
+
+			int colonAt = address.IndexOf (':');
+			if (colonAt <= 0)
+				return;
+
+			string portStr = address.Substring (colonAt + 1);
+			if (! UInt16.TryParse (portStr, out port))
+				return;
+
+			address = address.Substring (0, colonAt);
+		}
+
 		static MeeGoDevice chosenDevice;
 		
 		public static MeeGoDevice GetChosenDevice ()
