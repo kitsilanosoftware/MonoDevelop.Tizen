@@ -94,10 +94,27 @@ namespace MonoDevelop.MeeGo
 		{
 			var sb = new StringBuilder ();
 			foreach (var arg in cmd.EnvironmentVariables)
-				sb.AppendFormat ("export {0}='{1}'; ", arg.Key, arg.Value);
+				sb.AppendFormat ("export {0}='{1}' && ",
+						 arg.Key, arg.Value);
 
-			sb.AppendFormat ("gcc -g -o {0}/{1} {0}/Main.c $(pkg-config --cflags --libs mono-2)", cmd.DeviceProjectPath, cmd.Name);
-			sb.AppendFormat (" && cd {0} && ./{1}", cmd.DeviceProjectPath, cmd.Name);
+			// Experiment: link statically to the Mono
+			// runtime, and dynamically to the rest of the
+			// environment--but pkg-config does not seem
+			// to let us do that directly.  TODO: Optional?
+			bool staticMono = true;
+			var mtf = "MonoTizen_gcc_flags";
+
+			sb.AppendFormat ("{0}=\"$(pkg-config{1} --cflags --libs mono-2)\" && ",
+					 mtf, staticMono ? " --static" : "");
+
+			if (staticMono)
+				sb.AppendFormat ("{0}=\"$(echo ${0} | sed 's@ -lmono[^ ]* @ -Wl,-static&-Wl,-Bdynamic @g')\" && ",
+						 mtf);
+
+			sb.AppendFormat ("gcc -g -o {0}/{1} {0}/Main.c ${2} && ",
+					 cmd.DeviceProjectPath, cmd.Name, mtf);
+			sb.AppendFormat ("cd {0} && ./{1}",
+					 cmd.DeviceProjectPath, cmd.Name);
 
 			return sb.ToString ();
 		}
