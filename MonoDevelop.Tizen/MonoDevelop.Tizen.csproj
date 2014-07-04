@@ -93,6 +93,7 @@
     <Compile Include="TizenProjectConfiguration.cs" />
     <Compile Include="TizenSoftDebuggerEngine.cs" />
     <Compile Include="TizenSoftDebuggerSession.cs" />
+    <Compile Include="TizenSdkSdb.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

@@ -60,7 +60,7 @@ namespace MonoDevelop.Tizen
 		
 		void StartProcess (TizenSoftDebuggerStartInfo dsi)
 		{
-			TizenUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null).WaitForCompleted ();
+			TizenUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null);
 			var auth = TizenExecutionHandler.GetGdmXAuth (dsi.Device);
 			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dra.Address, dra.DebugPort);

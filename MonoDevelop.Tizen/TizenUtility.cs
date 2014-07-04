@@ -40,31 +40,30 @@ namespace MonoDevelop.Tizen
 	static class TizenUtility
 	{
 		//FIXME: needs better file list and handling of subdirectories
-		public static IAsyncOperation Upload (TizenDevice targetDevice, TizenProjectConfiguration conf,
-						      string[] extraFiles,
+		public static void Upload (TizenDevice targetDevice, TizenProjectConfiguration conf,
+						      string[] extraPaths,
 						      TextWriter outWriter, TextWriter errorWriter)
 		{
-			var sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
-			
+			var sdb = new TizenSdkSdb (conf, targetDevice);
+
 			var outDirFiles = Directory.GetFiles (conf.OutputDirectory, "*", SearchOption.TopDirectoryOnly);
 			var op = conf.OutputDirectory.ParentDirectory;
-			var files = new List<string> ();
+			var localPaths = new List<string> ();
 			for (int i = 0; i < outDirFiles.Length; i++)
-				files.Add (op.Combine (outDirFiles[i]));
-			if (extraFiles != null)
-				files.AddRange (extraFiles);
-			
-			var scop = new SshTransferOperation<Sftp> (sftp, targetDevice.Port, delegate (Sftp s) {
-				var dir = conf.ParentItem.Name;
-				try {
-					s.Mkdir (dir);
-				} catch {}
-				s.Put (files.ToArray (), dir);
-			});
-			scop.Run ();
-			return scop;
+				localPaths.Add (op.Combine (outDirFiles[i]));
+			if (extraPaths != null)
+				localPaths.AddRange (extraPaths);
+
+			var s = TizenSdkSdb.DevicePathSeparator;
+			var remoteDir = TizenSdkSdb.DeviceHome + s + conf.ParentItem.Name;
+			foreach (var localPath in localPaths) {
+				var f = Path.GetFileName (localPath);
+				var remotePath = remoteDir + s + f;
+
+				sdb.Push (localPath, remotePath);
+			}
 		}
-		
+
 		public static bool NeedsUploading (TizenProjectConfiguration conf)
 		{
 			var markerFile = conf.OutputDirectory.Combine (".meego_last_uploaded");
@@ -82,7 +81,7 @@ namespace MonoDevelop.Tizen
 		}
 	}
 	
-	class TizenDevice
+	public class TizenDevice
 	{
 		public TizenDevice (string id, string address, string username, string password)
 		{

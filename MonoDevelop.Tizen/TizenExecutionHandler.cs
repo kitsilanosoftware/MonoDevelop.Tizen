@@ -55,7 +55,7 @@ namespace MonoDevelop.Tizen
 			}
 			
 			//if (MeeGoUtility.NeedsUploading (cmd.Config)) {
-				TizenUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error).WaitForCompleted ();
+				TizenUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error);
 			//}
 
 			// Cf. GetGdmXAuth below.  We don't need X

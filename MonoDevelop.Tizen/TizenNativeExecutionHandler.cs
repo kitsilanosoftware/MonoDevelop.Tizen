@@ -51,8 +51,7 @@ namespace MonoDevelop.Tizen
 			var conf = cmd.Config;
 			string[] extraFiles = GetExtraUploads (conf);
 			TizenUtility.Upload (targetDevice, conf, extraFiles,
-					     console.Out, console.Error)
-				.WaitForCompleted ();
+					     console.Out, console.Error);
 
 			var proc = CreateProcess (cmd, targetDevice,
 						  console.Out.Write,

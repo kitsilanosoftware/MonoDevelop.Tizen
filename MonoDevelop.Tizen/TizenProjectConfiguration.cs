@@ -40,7 +40,13 @@ namespace MonoDevelop.Tizen
 		public TizenProjectConfiguration (string name) : base (name)
 		{
 		}
-		
+
+		public string SdkPath {
+			get {
+				return "/Users/dash/tizen/sdk";
+			}
+		}
+
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			//var cfg = configuration as TizenProjectConfiguration;
