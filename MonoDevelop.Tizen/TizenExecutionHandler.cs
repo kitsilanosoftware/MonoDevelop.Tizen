@@ -58,19 +58,18 @@ namespace MonoDevelop.Tizen
 				TizenUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error);
 			//}
 
-			// Cf. GetGdmXAuth below.  We don't need X
-			// auth for now.
-			Dictionary<string,string> auth = null;
-			var proc = CreateProcess (cmd, null, targetDevice, auth, console.Out.Write, console.Error.Write);
+			var proc = CreateProcess (cmd, null, targetDevice, console.Out.Write, console.Error.Write);
 			proc.Run ();
 			return proc;
 		}
 		
-		public static SshRemoteProcess CreateProcess (TizenExecutionCommand cmd, string sdbOptions, TizenDevice device,
-		                                              Dictionary<string,string> xauth, 
-		                                              Action<string> stdOut, Action<string> stdErr)
+		public static SshRemoteProcess CreateProcess (
+			TizenExecutionCommand cmd,
+			string sdbOptions,
+			TizenDevice device,
+			Action<string> stdOut, Action<string> stdErr)
 		{
-			string exec = GetCommandString (cmd, sdbOptions, xauth);
+			string exec = GetCommandString (cmd, sdbOptions);
 			
 			var ssh = new LiveSshExec (device.Address, device.Username, device.Password);
 			var port = device.Port;
@@ -90,7 +89,9 @@ namespace MonoDevelop.Tizen
 			return new SshRemoteProcess (ssh, port, exec, stdOut, stdErr, kill);
 		}
 		
-		public static string GetCommandString (TizenExecutionCommand cmd, string sdbOptions, Dictionary<string,string> auth)
+		public static string GetCommandString (
+			TizenExecutionCommand cmd,
+			string sdbOptions)
 		{
 			string runtimeArgs = string.IsNullOrEmpty (cmd.RuntimeArguments)
 				? (string.IsNullOrEmpty (sdbOptions)? "--debug" : "")
@@ -99,9 +100,6 @@ namespace MonoDevelop.Tizen
 			var sb = new StringBuilder ();
 			foreach (var arg in cmd.EnvironmentVariables)
 				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
-			if (auth != null)
-				foreach (var arg in auth)
-					sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
 			sb.Append ("mono");
 			if (!string.IsNullOrEmpty (sdbOptions))
 				sb.AppendFormat (" --debug --debugger-agent={0}", sdbOptions);
@@ -109,34 +107,6 @@ namespace MonoDevelop.Tizen
 			sb.AppendFormat (" {0} '{1}' {2}", runtimeArgs, cmd.DeviceExePath, cmd.Arguments);
 			
 			return sb.ToString ();
-		}
-		
-		public static Dictionary<string,string> GetGdmXAuth (TizenDevice targetDevice)
-		{
-			Sftp sftp = null;
-			try {
-				sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
-				sftp.Connect ();
-				var files = sftp.GetFileList ("/var/run/gdm/auth-for-" + targetDevice.Username + "*");
-				sftp.Close ();
-				if (files.Count == 1) {
-					return new Dictionary<string, string> () {
-						{ "XAUTHLOCALHOSTNAME", "localhost" },
-						{ "DISPLAY", ":0.0"}, 
-						{ "XAUTHORITY", "/var/run/gdm/" + files[0] +"/database"}
-					};
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error getting xauth via sftp", ex);
-				if (sftp != null) {
-					try {
-						sftp.Close ();
-					} catch (Exception ex2) {
-						LoggingService.LogError ("Error closing sftp connection", ex2);
-					}
-				}
-			}
-			return null;
 		}
 	}
 	
