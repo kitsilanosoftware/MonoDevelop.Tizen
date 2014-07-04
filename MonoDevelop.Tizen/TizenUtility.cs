@@ -84,17 +84,19 @@ namespace MonoDevelop.Tizen
 	
 	class TizenDevice
 	{
-		public TizenDevice (string address, string username, string password)
+		public TizenDevice (string id, string address, string username, string password)
 		{
 			ushort port;
 			MaybeSplitHostPort (ref address, out port);
 
+			this.Id = id;
 			this.Address = address;
 			this.Port = port;
 			this.Username = username;
 			this.Password = password;
 		}
 		
+		public string Id       { get; set; }
 		public string Address  { get; set; }
 		public ushort Port     { get; set; }
 		public string Username { get; set; }
