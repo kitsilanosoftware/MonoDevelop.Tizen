@@ -35,7 +35,7 @@ namespace MonoDevelop.Tizen
 {
 	public class TizenSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
-		SshRemoteProcess process;
+		SdbShellCommand process;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -61,11 +61,10 @@ namespace MonoDevelop.Tizen
 		void StartProcess (TizenSoftDebuggerStartInfo dsi)
 		{
 			TizenUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null);
-			var auth = TizenExecutionHandler.GetGdmXAuth (dsi.Device);
 			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dra.Address, dra.DebugPort);
 			
-			process = TizenExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth,
+			process = TizenExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device,
 			                                               x => OnTargetOutput (false, x),
 			                                               x => OnTargetOutput (true, x));
 			
@@ -77,7 +76,7 @@ namespace MonoDevelop.Tizen
 				EndProcess ();
 			};
 			
-			process.Run ();
+			process.Start();
 		}
 		
 		void EndProcess ()

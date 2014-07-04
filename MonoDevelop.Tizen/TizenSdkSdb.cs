@@ -84,5 +84,20 @@ namespace MonoDevelop.Tizen
 			if (p.ExitCode != 0)
 				throw new Exception ("sdb push failed.");
 		}
+
+		public Process ShellNoWait (string command) {
+			var p = new Process ();
+			var psi = p.StartInfo;
+
+			psi.UseShellExecute = false;
+			psi.FileName = GetSdbPath ();
+			psi.Arguments = CombineArguments (
+				new string[] { "shell", command });
+			psi.RedirectStandardOutput = true;
+			psi.RedirectStandardError = true;
+
+			p.Start ();
+			return p;
+		}
 	}
 }

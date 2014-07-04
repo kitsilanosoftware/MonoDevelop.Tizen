@@ -56,7 +56,7 @@ namespace MonoDevelop.Tizen
 			var proc = CreateProcess (cmd, targetDevice,
 						  console.Out.Write,
 						  console.Error.Write);
-			proc.Run ();
+			proc.Start ();
 			return proc;
 		}
 
@@ -73,19 +73,18 @@ namespace MonoDevelop.Tizen
 			return new string[] { s };
 		}
 
-		private static SshRemoteProcess CreateProcess (
+		private static SdbShellCommand CreateProcess (
 			TizenExecutionCommand cmd,
 			TizenDevice device,
 			Action<string> stdOut,
 			Action<string> stdErr)
 		{
 			string shCommand = GetShCommand (cmd);
-			var ssh = new LiveSshExec (device.Address,
-						   device.Username,
-						   device.Password);
-			return new SshRemoteProcess (ssh, device.Port,
-						     shCommand, stdOut, stdErr,
-						     null);
+
+			var sdb = new TizenSdkSdb (cmd.Config, device);
+
+			return new SdbShellCommand (sdb, shCommand,
+						    stdOut, stdErr);
 		}
 
 		private static string GetShCommand (

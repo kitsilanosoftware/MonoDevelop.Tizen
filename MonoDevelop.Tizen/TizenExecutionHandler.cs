@@ -34,6 +34,8 @@ using System.IO;
 using MonoDevelop.Core;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace MonoDevelop.Tizen
 {
@@ -59,34 +61,21 @@ namespace MonoDevelop.Tizen
 			//}
 
 			var proc = CreateProcess (cmd, null, targetDevice, console.Out.Write, console.Error.Write);
-			proc.Run ();
+			proc.Start ();
 			return proc;
 		}
 		
-		public static SshRemoteProcess CreateProcess (
+		public static SdbShellCommand CreateProcess (
 			TizenExecutionCommand cmd,
 			string sdbOptions,
 			TizenDevice device,
 			Action<string> stdOut, Action<string> stdErr)
 		{
 			string exec = GetCommandString (cmd, sdbOptions);
-			
-			var ssh = new LiveSshExec (device.Address, device.Username, device.Password);
-			var port = device.Port;
-			
-			//hacky but openssh seems to ignore signals
-			Action kill = delegate {
-				var killExec = new SshExec (device.Address, device.Username, device.Password);
-				if (port == 0)
-					killExec.Connect ();
-				else
-					killExec.Connect (port);
-				killExec.RunCommand ("ps x | grep '" + cmd.DeviceExePath + "' | " +
-					"grep -v 'grep \\'" + cmd.DeviceExePath + "\\' | awk '{ print $1 }' | xargs kill ");
-				killExec.Close ();
-			};
-			
-			return new SshRemoteProcess (ssh, port, exec, stdOut, stdErr, kill);
+
+			var sdb = new TizenSdkSdb (cmd.Config, device);
+
+			return new SdbShellCommand (sdb, exec, stdOut, stdErr);
 		}
 		
 		public static string GetCommandString (
@@ -109,120 +98,122 @@ namespace MonoDevelop.Tizen
 			return sb.ToString ();
 		}
 	}
-	
-	class SshRemoteProcess : SshOperation<LiveSshExec>, IProcessAsyncOperation
+
+	class SdbShellCommand : IProcessAsyncOperation, IAsyncOperation
 	{
+		TizenSdkSdb sdb;
 		string command;
-		ChannelExec channel;
-		Action kill;
 		Action<string> stdOut, stdErr;
-		
-		public SshRemoteProcess (LiveSshExec ssh, ushort port, string command,
-		                         Action<string> stdOut, Action<string> stdErr, Action kill) 
-			: base (ssh, port)
+		Process process;
+		ManualResetEvent wait = new ManualResetEvent (false);
+
+		public SdbShellCommand (
+			TizenSdkSdb sdb,
+			string command,
+			Action<string> stdOut,
+			Action<string> stdErr)
 		{
+			this.sdb = sdb;
 			this.command = command;
-			this.kill = kill;
 			this.stdErr = stdErr;
 			this.stdOut = stdOut;
 		}
-		
-		protected override void RunOperations ()
+
+		public void Start ()
 		{
-			try {
-				channel = Ssh.GetChannel (command);
-				channel.setErrStream (new TextStream (stdErr));
-				channel.setOutputStream (new TextStream (stdOut));
-				channel.connect ();
-				while (!channel.isEOF ())
-					Thread.Sleep (200);
-				channel.disconnect ();
-			} finally {
-				ExitCode = channel.getExitStatus ();
-			}
+			// Oh.  The RunOperations thingy was expected
+			// by the SSH lib, not by MonoDevelop.  Let's
+			// do this for now.  TODO: Cleanup.
+			var ts = new ThreadStart (this.RunOperations);
+			var thread = new Thread (ts);
+			thread.Start ();
 		}
-		
+
+		private void RunOperations ()
+		{
+			var p = sdb.ShellNoWait (command);
+			this.process = p;
+
+			Copier.Start (p.StandardOutput, stdOut);
+			Copier.Start (p.StandardError, stdErr);
+			p.WaitForExit ();
+
+			ExitCode = p.ExitCode;
+			Success = ExitCode == 0;
+			IsCompleted = true;
+			wait.Set ();
+			if (Completed != null)
+				Completed (this);
+		}
+
 		public int ExitCode { get; private set; }
 		public int ProcessId { get; private set; }
-		
-		public override void Cancel ()
+
+		public void Cancel ()
 		{
-			if (kill != null)
-				kill ();
-			
-			channel.sendSignal ("TERM");
-			channel.disconnect ();
+			var p = this.process;
+			if (p != null) {
+				this.process = null;
+				try {
+					p.Kill ();
+				} catch (Win32Exception x) {
+					LoggingService.LogError (
+						"Could not kill sdb", x);
+				}
+			}
 		}
 
 		public void Dispose ()
 		{
-			// TODO: Should we do as in Cancel here?
+			Cancel ();
 		}
+
+		public void WaitForCompleted ()
+		{
+			WaitHandle.WaitAll (new WaitHandle [] { wait });
+		}
+
+		public event OperationHandler Completed;
+
+		public bool IsCompleted { get; private set; }
+		public bool Success { get; private set; }
+		public bool SuccessWithWarnings { get; private set; }
 	}
-	
-	class LiveSshExec : SshExec
+
+	class Copier
 	{
-		public LiveSshExec (string address, string username, string password) : base (address, username, password)
+		TextReader source;
+		Action<string> target;
+
+		public static void Start (TextReader source,
+					  Action<string> target)
 		{
+			var copier = new Copier (source, target);
+			var ts = new ThreadStart (copier.Run);
+			var thread = new Thread (ts);
+			thread.Start ();
 		}
-		
-		public ChannelExec GetChannel (string command)
+
+		private Copier (TextReader source,  Action<string> target)
 		{
-			return (ChannelExec) (m_channel = GetChannelExec (command));
+			this.source = source;
+			this.target = target;
 		}
-		
-		public ChannelExec Channel {
-			get { return (ChannelExec)m_channel; }
-		}
-	}
-	
-	class TextStream : Stream
-	{
-		Action<string> onWrite;
-		Encoding encoding;
-		
-		public TextStream (Action<string> onWrite) : this (onWrite, Encoding.UTF8)
+
+		private void Run ()
 		{
-		}
-		
-		public TextStream (Action<string> onWrite, Encoding incomingEncoding)
-		{
-			this.onWrite = onWrite;
-			this.encoding = incomingEncoding;
-		}
-		
-		public override void Write (byte[] buffer, int offset, int count)
-		{
-			onWrite (encoding.GetString (buffer, offset, count));
-		}
-		
-		public override bool CanRead { get { return false; } }
-		public override bool CanWrite { get { return false; } }
-		public override bool CanSeek { get { return false; } }
-		public override long Length { get { return -1; } }
-		
-		public override long Position {
-			get { return -1; }
-			set { throw new InvalidOperationException (); }
-		}
-		
-		public override long Seek (long offset, SeekOrigin origin)
-		{
-			throw new InvalidOperationException ();
-		}
-		
-		public override void SetLength (long value)
-		{
-			throw new InvalidOperationException ();
-		}
-		
-		public override int Read (byte[] buffer, int offset, int count)
-		{
-			throw new InvalidOperationException ();
-		}
-		
-		public override void Flush ()
-		{
+			try {
+				for (;;) {
+					var line = source.ReadLine ();
+
+					if (line == null)
+						break;
+
+					target (line + "\n");
+				}
+			} catch (IOException) {
+				// Stop copying.
+			}
 		}
 	}
 }

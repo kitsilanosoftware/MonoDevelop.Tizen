@@ -50,13 +50,17 @@ namespace MonoDevelop.Tizen
 
 		public string DeviceProjectPath {
 			get {
-				return Config.ParentItem.Name;
+				return TizenSdkSdb.DeviceHome +
+					TizenSdkSdb.DevicePathSeparator +
+					Config.ParentItem.Name;
 			}
 		}
 
 		public string DeviceExePath {
 			get {
-				return DeviceProjectPath + "/" + Config.CompiledOutputName.FileName;
+				return DeviceProjectPath +
+					TizenSdkSdb.DevicePathSeparator +
+					Config.CompiledOutputName.FileName;
 			}
 		}
 	}
