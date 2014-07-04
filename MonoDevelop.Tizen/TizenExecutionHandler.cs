@@ -1,5 +1,5 @@
 // 
-// MeeGoExecutionHandler.cs
+// TizenExecutionHandler.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -35,27 +35,27 @@ using MonoDevelop.Core;
 using System.Text;
 using System.Threading;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
 
-	class MeeGoExecutionHandler : IExecutionHandler
+	class TizenExecutionHandler : IExecutionHandler
 	{
 
 		public bool CanExecute (ExecutionCommand command)
 		{
-			return command is MeeGoExecutionCommand;
+			return command is TizenExecutionCommand;
 		}
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			var cmd = (MeeGoExecutionCommand) command;
-			var targetDevice = MeeGoDevice.GetChosenDevice ();
+			var cmd = (TizenExecutionCommand) command;
+			var targetDevice = TizenDevice.GetChosenDevice ();
 			if (targetDevice == null) {
 				return new NullProcessAsyncOperation (false);
 			}
 			
 			//if (MeeGoUtility.NeedsUploading (cmd.Config)) {
-				MeeGoUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error).WaitForCompleted ();
+				TizenUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error).WaitForCompleted ();
 			//}
 
 			// Cf. GetGdmXAuth below.  We don't need X
@@ -66,7 +66,7 @@ namespace MonoDevelop.MeeGo
 			return proc;
 		}
 		
-		public static SshRemoteProcess CreateProcess (MeeGoExecutionCommand cmd, string sdbOptions, MeeGoDevice device,
+		public static SshRemoteProcess CreateProcess (TizenExecutionCommand cmd, string sdbOptions, TizenDevice device,
 		                                              Dictionary<string,string> xauth, 
 		                                              Action<string> stdOut, Action<string> stdErr)
 		{
@@ -90,7 +90,7 @@ namespace MonoDevelop.MeeGo
 			return new SshRemoteProcess (ssh, port, exec, stdOut, stdErr, kill);
 		}
 		
-		public static string GetCommandString (MeeGoExecutionCommand cmd, string sdbOptions, Dictionary<string,string> auth)
+		public static string GetCommandString (TizenExecutionCommand cmd, string sdbOptions, Dictionary<string,string> auth)
 		{
 			string runtimeArgs = string.IsNullOrEmpty (cmd.RuntimeArguments)
 				? (string.IsNullOrEmpty (sdbOptions)? "--debug" : "")
@@ -111,7 +111,7 @@ namespace MonoDevelop.MeeGo
 			return sb.ToString ();
 		}
 		
-		public static Dictionary<string,string> GetGdmXAuth (MeeGoDevice targetDevice)
+		public static Dictionary<string,string> GetGdmXAuth (TizenDevice targetDevice)
 		{
 			Sftp sftp = null;
 			try {

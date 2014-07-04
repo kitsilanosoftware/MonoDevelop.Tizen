@@ -1,5 +1,5 @@
 // 
-// MeeGoExecutionHandler.cs
+// TizenProjectBinding.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,36 +25,32 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Execution;
-using System.Collections.Generic;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.MeeGo
+
+namespace MonoDevelop.Tizen
 {
-	public class MeeGoExecutionModeSet : IExecutionModeSet
-	{
-		MeeGoExecutionMode mode;
-		
-		public string Name { get { return "MeeGo";  } }
-		
-		public IEnumerable<IExecutionMode> ExecutionModes {
-			get {
-				yield return mode ?? (mode = new MeeGoExecutionMode ());
-			}
-		}
-	}
 	
-	class MeeGoExecutionMode : IExecutionMode
+	public class TizenProjectBinding : IProjectBinding
 	{
-		MeeGoExecutionHandler handler;
+		public Project CreateProject (ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
+		{
+			string lang = projectOptions.GetAttribute ("language");
+			return new TizenProject (lang, info, projectOptions);
+		}
 		
-		public string Name { get { return "MeeGo Device"; } }
+		public Project CreateSingleFileProject (string sourceFile)
+		{
+			throw new InvalidOperationException ();
+		}
 		
-		public string Id { get { return "MeeGoExecutionMode"; } }
+		public bool CanCreateSingleFileProject (string sourceFile)
+		{
+			return false;
+		}
 		
-		public IExecutionHandler ExecutionHandler {
-			get {
-				return handler ?? (handler = new MeeGoExecutionHandler ());
-			}
+		public string Name {
+			get { return "Tizen"; }
 		}
 	}
 }

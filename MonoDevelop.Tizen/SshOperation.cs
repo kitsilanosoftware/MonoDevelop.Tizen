@@ -29,7 +29,7 @@ using Tamir.SharpSsh;
 using MonoDevelop.Core;
 using System.Threading;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
 	public abstract class SshOperation<T> : IAsyncOperation where T : SshBase
 	{

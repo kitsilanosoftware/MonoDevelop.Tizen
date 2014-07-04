@@ -1,5 +1,5 @@
 // 
-// MeeGoUtility.cs
+// TizenUtility.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -35,12 +35,12 @@ using System.Diagnostics;
 using Tamir.SharpSsh;
 using System.Threading;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
-	static class MeeGoUtility
+	static class TizenUtility
 	{
 		//FIXME: needs better file list and handling of subdirectories
-		public static IAsyncOperation Upload (MeeGoDevice targetDevice, MeeGoProjectConfiguration conf,
+		public static IAsyncOperation Upload (TizenDevice targetDevice, TizenProjectConfiguration conf,
 						      string[] extraFiles,
 						      TextWriter outWriter, TextWriter errorWriter)
 		{
@@ -65,14 +65,14 @@ namespace MonoDevelop.MeeGo
 			return scop;
 		}
 		
-		public static bool NeedsUploading (MeeGoProjectConfiguration conf)
+		public static bool NeedsUploading (TizenProjectConfiguration conf)
 		{
 			var markerFile = conf.OutputDirectory.Combine (".meego_last_uploaded");
 			return File.Exists (conf.CompiledOutputName) && (!File.Exists (markerFile) 
 				|| File.GetLastWriteTime (markerFile) < File.GetLastWriteTime (conf.OutputAssembly));
 		}
 				
-		public static void TouchUploadMarker (MeeGoProjectConfiguration conf)
+		public static void TouchUploadMarker (TizenProjectConfiguration conf)
 		{
 			var markerFile = conf.OutputDirectory.Combine (".meego_last_uploaded");
 			if (File.Exists (markerFile))
@@ -82,9 +82,9 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	class MeeGoDevice
+	class TizenDevice
 	{
-		public MeeGoDevice (string address, string username, string password)
+		public TizenDevice (string address, string username, string password)
 		{
 			ushort port;
 			MaybeSplitHostPort (ref address, out port);
@@ -116,13 +116,13 @@ namespace MonoDevelop.MeeGo
 			address = address.Substring (0, colonAt);
 		}
 
-		static MeeGoDevice chosenDevice;
+		static TizenDevice chosenDevice;
 		
-		public static MeeGoDevice GetChosenDevice ()
+		public static TizenDevice GetChosenDevice ()
 		{
 			if (chosenDevice == null) {
 				DispatchService.GuiSyncDispatch (delegate {
-					chosenDevice = MeeGoDevicePicker.GetDevice (null);
+					chosenDevice = TizenDevicePicker.GetDevice (null);
 				});
 			}
 			return chosenDevice;

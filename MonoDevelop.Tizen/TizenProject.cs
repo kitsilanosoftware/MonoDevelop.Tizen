@@ -1,5 +1,5 @@
 // 
-// MeeGoProject.cs
+// TizenProject.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -31,24 +31,24 @@ using MonoDevelop.Projects;
 using System;
 using System.Xml;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
 	
-	public class MeeGoProject : DotNetAssemblyProject
+	public class TizenProject : DotNetAssemblyProject
 	{
 		#region Constructors
 		
-		public MeeGoProject ()
+		public TizenProject ()
 		{
 			Init ();
 		}
 		
-		public MeeGoProject (string language) : base (language)
+		public TizenProject (string language) : base (language)
 		{
 			Init ();
 		}
 		
-		public MeeGoProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+		public TizenProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
 			Init ();
@@ -60,7 +60,7 @@ namespace MonoDevelop.MeeGo
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
-			var conf = new MeeGoProjectConfiguration (name);
+			var conf = new TizenProjectConfiguration (name);
 			conf.CopyFrom (base.CreateConfiguration (name));
 			return conf;
 		}
@@ -72,8 +72,8 @@ namespace MonoDevelop.MeeGo
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
-			var conf = (MeeGoProjectConfiguration) configuration;
-			return new MeeGoExecutionCommand (conf) {
+			var conf = (TizenProjectConfiguration) configuration;
+			return new TizenExecutionCommand (conf) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel),
 			};
 		}

@@ -1,5 +1,5 @@
 // 
-// MeeGoExecutionCommand.cs
+// TizenSoftDebuggerEngine.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -24,40 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Core;
+using MonoDevelop.Debugger;
+using MonoDevelop.Debugger.Soft;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Assemblies;
-using System.Collections.Generic;
-using System.IO;
+using Mono.Debugging.Client;
+using System.Net;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
-	public class MeeGoExecutionCommand: DotNetExecutionCommand
+	public class TizenSoftDebuggerEngine: IDebuggerEngine
 	{
-		public MeeGoExecutionCommand (MeeGoProjectConfiguration config) : base (config.CompiledOutputName)
+		public bool CanDebugCommand (ExecutionCommand command)
 		{
-			this.Config = config;
+			return command is TizenExecutionCommand;
 		}
 		
-		public MeeGoProjectConfiguration Config { get; private set; }
+		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		{
+			var cmd = (TizenExecutionCommand) command;
+			
+			var debuggerAddress = Dns.GetHostEntry (Dns.GetHostName ()).AddressList[0];
+			int debuggerPort = 10000;
+			
+			var dev = TizenDevice.GetChosenDevice ();
+			var startInfo = new TizenSoftDebuggerStartInfo (debuggerAddress, debuggerPort, cmd, dev);
+			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
+			return startInfo;
+		}
+
+		public DebuggerSession CreateSession ()
+		{
+			return new TizenSoftDebuggerSession ();
+		}
 		
-		public string Name {
-			get {
-				return Path.GetFileNameWithoutExtension (Config.OutputAssembly);
-			}
-		}
-
-		public string DeviceProjectPath {
-			get {
-				return Config.ParentItem.Name;
-			}
-		}
-
-		public string DeviceExePath {
-			get {
-				return DeviceProjectPath + "/" + Config.CompiledOutputName.FileName;
-			}
+		public ProcessInfo[] GetAttachableProcesses ()
+		{
+			return new ProcessInfo[0];
 		}
 	}
 }

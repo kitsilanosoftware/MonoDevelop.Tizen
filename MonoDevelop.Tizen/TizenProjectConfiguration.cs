@@ -1,5 +1,5 @@
 // 
-// MeeGoDebuggerEngine.cs
+// TizenProjectConfiguration.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -24,42 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Debugger;
-using MonoDevelop.Debugger.Soft;
-using MonoDevelop.Core.Execution;
-using Mono.Debugging.Client;
-using System.Net;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
-	public class MeeGoSoftDebuggerEngine: IDebuggerEngine
+	
+	
+	public class TizenProjectConfiguration : DotNetProjectConfiguration
 	{
-		public bool CanDebugCommand (ExecutionCommand command)
+		public TizenProjectConfiguration () : base ()
 		{
-			return command is MeeGoExecutionCommand;
 		}
 		
-		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		public TizenProjectConfiguration (string name) : base (name)
 		{
-			var cmd = (MeeGoExecutionCommand) command;
-			
-			var debuggerAddress = Dns.GetHostEntry (Dns.GetHostName ()).AddressList[0];
-			int debuggerPort = 10000;
-			
-			var dev = MeeGoDevice.GetChosenDevice ();
-			var startInfo = new MeeGoSoftDebuggerStartInfo (debuggerAddress, debuggerPort, cmd, dev);
-			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
-			return startInfo;
-		}
-
-		public DebuggerSession CreateSession ()
-		{
-			return new MeeGoSoftDebuggerSession ();
 		}
 		
-		public ProcessInfo[] GetAttachableProcesses ()
+		public override void CopyFrom (ItemConfiguration configuration)
 		{
-			return new ProcessInfo[0];
+			//var cfg = configuration as TizenProjectConfiguration;
+			//if (cfg != null) {
+			//}
+			base.CopyFrom (configuration);
 		}
 	}
 }

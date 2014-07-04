@@ -1,5 +1,5 @@
 // 
-// MeeGoDebuggerSession.cs
+// TizenSoftDebuggerSession.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -31,22 +31,22 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core.Execution;
 using System.IO;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
-	public class MeeGoSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
+	public class TizenSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
 		SshRemoteProcess process;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			var dsi = (MeeGoSoftDebuggerStartInfo) startInfo;
+			var dsi = (TizenSoftDebuggerStartInfo) startInfo;
 			StartProcess (dsi);
 			StartListening (dsi);
 		}
 		
 		protected override string GetConnectingMessage (DebuggerStartInfo startInfo)
 		{
-			var dsi = (MeeGoSoftDebuggerStartInfo) startInfo;
+			var dsi = (TizenSoftDebuggerStartInfo) startInfo;
 			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 
 			return string.Format ("Waiting for debugger to connect on {0}:{1}...", dra.Address, dra.DebugPort);
@@ -58,14 +58,14 @@ namespace MonoDevelop.MeeGo
 			EndProcess ();
 		}
 		
-		void StartProcess (MeeGoSoftDebuggerStartInfo dsi)
+		void StartProcess (TizenSoftDebuggerStartInfo dsi)
 		{
-			MeeGoUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null).WaitForCompleted ();
-			var auth = MeeGoExecutionHandler.GetGdmXAuth (dsi.Device);
+			TizenUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null).WaitForCompleted ();
+			var auth = TizenExecutionHandler.GetGdmXAuth (dsi.Device);
 			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dra.Address, dra.DebugPort);
 			
-			process = MeeGoExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth,
+			process = TizenExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth,
 			                                               x => OnTargetOutput (false, x),
 			                                               x => OnTargetOutput (true, x));
 			
@@ -98,12 +98,12 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	class MeeGoSoftDebuggerStartInfo : SoftDebuggerStartInfo
+	class TizenSoftDebuggerStartInfo : SoftDebuggerStartInfo
 	{
-		public MeeGoExecutionCommand ExecutionCommand { get; private set; }
-		public MeeGoDevice Device { get; private set; }
+		public TizenExecutionCommand ExecutionCommand { get; private set; }
+		public TizenDevice Device { get; private set; }
 		
-		public MeeGoSoftDebuggerStartInfo (IPAddress address, int debugPort, MeeGoExecutionCommand cmd, MeeGoDevice device)
+		public TizenSoftDebuggerStartInfo (IPAddress address, int debugPort, TizenExecutionCommand cmd, TizenDevice device)
 			: base (new SoftDebuggerListenArgs (cmd.Name, address, debugPort))
 		{
 			ExecutionCommand = cmd;

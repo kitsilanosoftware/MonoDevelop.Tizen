@@ -19,17 +19,34 @@ using System;
 using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
 	public class TizenExecutionModeSet : IExecutionModeSet
 	{
-		TizenNativeExecutionMode mode;
+		IExecutionMode monoMode;
+		IExecutionMode nativeMode;
 
 		public string Name { get { return "Tizen";  } }
 
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				yield return mode ?? (mode = new TizenNativeExecutionMode ());
+				yield return monoMode ?? (monoMode = new TizenMonoExecutionMode ());
+				yield return nativeMode ?? (nativeMode = new TizenNativeExecutionMode ());
+			}
+		}
+	}
+
+	class TizenMonoExecutionMode : IExecutionMode
+	{
+		TizenExecutionHandler handler;
+
+		public string Name { get { return "Tizen Device, Installed Mono"; } }
+
+		public string Id { get { return "TizenMonoExecutionMode"; } }
+
+		public IExecutionHandler ExecutionHandler {
+			get {
+				return handler ?? (handler = new TizenExecutionHandler ());
 			}
 		}
 	}

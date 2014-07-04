@@ -23,7 +23,7 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Tizen Native Console Project</_Name>
+		<_Name>Tizen Console Project</_Name>
 		<_Category>C#/Tizen</_Category>
 		<Icon>md-project</Icon>
 		<LanguageName>C#</LanguageName>
@@ -41,7 +41,7 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 
-		<Project name = "${ProjectName}" directory = "." type = "MeeGo">
+		<Project name = "${ProjectName}" directory = "." type = "Tizen">
 			<Options Target = "WinExe"/>
 
 			<References>

@@ -1,5 +1,5 @@
 // 
-// MeeGoProjectConfiguration.cs
+// TizenExecutionCommand.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -24,29 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects;
+using System;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
+using System.Collections.Generic;
+using System.IO;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
-	
-	
-	public class MeeGoProjectConfiguration : DotNetProjectConfiguration
+	public class TizenExecutionCommand: DotNetExecutionCommand
 	{
-		public MeeGoProjectConfiguration () : base ()
+		public TizenExecutionCommand (TizenProjectConfiguration config) : base (config.CompiledOutputName)
 		{
+			this.Config = config;
 		}
 		
-		public MeeGoProjectConfiguration (string name) : base (name)
-		{
-		}
+		public TizenProjectConfiguration Config { get; private set; }
 		
-		public override void CopyFrom (ItemConfiguration configuration)
-		{
-			//var cfg = configuration as MeeGoProjectConfiguration;
-			//if (cfg != null) {
-			//}
-			base.CopyFrom (configuration);
+		public string Name {
+			get {
+				return Path.GetFileNameWithoutExtension (Config.OutputAssembly);
+			}
+		}
+
+		public string DeviceProjectPath {
+			get {
+				return Config.ParentItem.Name;
+			}
+		}
+
+		public string DeviceExePath {
+			get {
+				return DeviceProjectPath + "/" + Config.CompiledOutputName.FileName;
+			}
 		}
 	}
 }

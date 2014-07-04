@@ -13,40 +13,34 @@
   </Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id       = "MeeGoGtkProject"
-		                 file     = "Templates/MeeGoGtkProject.xpt.xml" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id       = "TizenNativeConsoleProject"
-		                 file     = "Templates/TizenNativeConsoleProject.xpt.xml" />
+		<ProjectTemplate id       = "TizenConsoleProject"
+		                 file     = "Templates/TizenConsoleProject.xpt.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{3fd4c4e6-4e66-4b72-9776-a9d37f06ace0}"
-			type="MonoDevelop.MeeGo.MeeGoProject" />
+			type="MonoDevelop.Tizen.TizenProject" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "MeeGo" class = "MonoDevelop.MeeGo.MeeGoProjectBinding" />
+		<ProjectBinding id = "Tizen" class = "MonoDevelop.Tizen.TizenProjectBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.MeeGo.MeeGoProject" />
-		<DataType class = "MonoDevelop.MeeGo.MeeGoProjectConfiguration" />
+		<DataType class = "MonoDevelop.Tizen.TizenProject" />
+		<DataType class = "MonoDevelop.Tizen.TizenProjectConfiguration" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
-		<ModeSetType class="MonoDevelop.MeeGo.MeeGoExecutionModeSet"/>
-		<ModeSetType class="MonoDevelop.MeeGo.TizenExecutionModeSet"/>
+		<ModeSetType class="MonoDevelop.Tizen.TizenExecutionModeSet"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
-			id="MonoDevelop.MeeGo.SoftDebugger"
-			name="Mono Soft Debugger for MeeGo"
+			id="MonoDevelop.Tizen.SoftDebugger"
+			name="Mono Soft Debugger for Tizen"
 			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
-			type="MonoDevelop.MeeGo.MeeGoSoftDebuggerEngine" />
+			type="MonoDevelop.Tizen.TizenSoftDebuggerEngine" />
 	</Extension>
 </Addin>

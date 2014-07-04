@@ -27,7 +27,7 @@ using MonoDevelop.Core;
 using System.Text;
 using System.Threading;
 
-namespace MonoDevelop.MeeGo
+namespace MonoDevelop.Tizen
 {
 
 	class TizenNativeExecutionHandler : IExecutionHandler
@@ -35,22 +35,22 @@ namespace MonoDevelop.MeeGo
 
 		public bool CanExecute (ExecutionCommand command)
 		{
-			return command is MeeGoExecutionCommand;
+			return command is TizenExecutionCommand;
 		}
 
 		public IProcessAsyncOperation Execute (
 			ExecutionCommand command,
 			IConsole console)
 		{
-			var cmd = (MeeGoExecutionCommand) command;
-			var targetDevice = MeeGoDevice.GetChosenDevice ();
+			var cmd = (TizenExecutionCommand) command;
+			var targetDevice = TizenDevice.GetChosenDevice ();
 			if (targetDevice == null) {
 				return new NullProcessAsyncOperation (false);
 			}
 
 			var conf = cmd.Config;
 			string[] extraFiles = GetExtraUploads (conf);
-			MeeGoUtility.Upload (targetDevice, conf, extraFiles,
+			TizenUtility.Upload (targetDevice, conf, extraFiles,
 					     console.Out, console.Error)
 				.WaitForCompleted ();
 
@@ -62,7 +62,7 @@ namespace MonoDevelop.MeeGo
 		}
 
 		private static string[] GetExtraUploads (
-			MeeGoProjectConfiguration conf)
+			TizenProjectConfiguration conf)
 		{
 			var dnp = conf.ParentItem as Project;
 			var files = dnp.Files;
@@ -75,8 +75,8 @@ namespace MonoDevelop.MeeGo
 		}
 
 		private static SshRemoteProcess CreateProcess (
-			MeeGoExecutionCommand cmd,
-			MeeGoDevice device,
+			TizenExecutionCommand cmd,
+			TizenDevice device,
 			Action<string> stdOut,
 			Action<string> stdErr)
 		{
@@ -90,7 +90,7 @@ namespace MonoDevelop.MeeGo
 		}
 
 		private static string GetShCommand (
-			MeeGoExecutionCommand cmd)
+			TizenExecutionCommand cmd)
 		{
 			var sb = new StringBuilder ();
 			foreach (var arg in cmd.EnvironmentVariables)
