@@ -100,11 +100,14 @@ namespace MonoDevelop.Tizen
 			bool staticMono = true;
 			var mtf = "MonoTizen_gcc_flags";
 
-			sb.AppendFormat ("{0}=\"$(pkg-config{1} --cflags --libs mono-2)\" && ",
+			// We're using backquotes because SDB
+			// execution is not robust wrt. quoting.
+			// TODO: Fix.
+			sb.AppendFormat ("{0}=`pkg-config{1} --cflags --libs mono-2` && ",
 					 mtf, staticMono ? " --static" : "");
 
 			if (staticMono)
-				sb.AppendFormat ("{0}=\"$(echo ${0} | sed 's@ -lmono[^ ]* @ -Wl,-static&-Wl,-Bdynamic @g')\" && ",
+				sb.AppendFormat ("{0}=`echo ${0} | sed 's@ -lmono[^ ]* @ -Wl,-static&-Wl,-Bdynamic @g'` && ",
 						 mtf);
 
 			sb.AppendFormat ("gcc -g -o {0}/{1} {0}/Main.c ${2} && ",
