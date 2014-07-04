@@ -1,5 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<ExtensionModel>
-	<Runtime>
-	</Runtime>
-</ExtensionModel>
+<?xml version="1.0" encoding="UTF-8"?>
+<Addin namespace="Tizen"
+       id="Tizen"
+       name="Tizen development"
+       author="Kitsilano Software Inc."
+       copyright="GPL"
+       description="Support for developing and deploying Mono/Tizen applications"
+       category="Mobile Development"
+       version="1.0">
+  <Dependencies>
+    <Addin id="::MonoDevelop.Core" version="5.0" />
+    <Addin id="::MonoDevelop.Ide" version="5.0" />
+  </Dependencies>
+</Addin>

@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle ("MonoDevelop.Tizen")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("")]
+[assembly: AssemblyCompany ("Kitsilano Software Inc.")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("dash")]
+[assembly: AssemblyCopyright ("Kitsilano Software Inc.")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
