@@ -20,8 +20,6 @@ using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
-using Tamir.SharpSsh;
-using Tamir.SharpSsh.jsch;
 using System.IO;
 using MonoDevelop.Core;
 using System.Text;

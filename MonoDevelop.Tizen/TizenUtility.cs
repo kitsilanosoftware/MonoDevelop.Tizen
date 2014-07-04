@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
  
 using System.Diagnostics;
-using Tamir.SharpSsh;
 using System.Threading;
 
 namespace MonoDevelop.Tizen
