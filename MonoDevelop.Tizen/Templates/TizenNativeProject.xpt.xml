@@ -92,7 +92,11 @@ extern "C"
 #include <mono/jit/jit.h>
 #include <mono/metadata/environment.h>
 #include <mono/metadata/mono-config.h>
+#include <mono/metadata/assembly.h>
 #include <stdlib.h>
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 static void
 mono_tizen_jit_exec_main (MonoDomain *domain, const char *file, int argc, char** argv)
@@ -113,24 +117,38 @@ mono_tizen_jit_exec_main (MonoDomain *domain, const char *file, int argc, char**
 int
 mono_tizen_main(int argc, char* argv[]) {
 	MonoDomain *domain;
-	const char *file;
-	int retval;
+	const char *exe_paths[] = {
+		"/opt/apps/" TOSTRING(MONO_TIZEN_APPID) "/bin/Release/${Namespace}.exe",
+		"/opt/apps/" TOSTRING(MONO_TIZEN_APPID) "/bin/Debug/${Namespace}.exe",
+		NULL
+	};
+	const char *exe_path = NULL;
+	int i, retval;
 
-	file = "${Namespace}.dll";
+	for (i = 0; exe_paths[i]; i++) {
+		if (access (exe_paths[i], R_OK) == 0) {
+			exe_path = exe_paths[i];
+			break;
+		}
+	}
+
+	if (! exe_path) {
+		printf ("Start assembly %s not found", exe_paths [0]);
+		exit (1);
+	}
 
 	/*
-	 * Load the default Mono configuration file, this is needed
-	 * if you are planning on using the dllmaps defined on the
-	 * system configuration
+	 * Here's where we are going to look up our assemblies.
 	 */
-	mono_config_parse (NULL);
+	mono_set_assemblies_path ("/opt/apps/" TOSTRING(MONO_TIZEN_APPID) "/lib/mono");
+
 	/*
 	 * mono_jit_init() creates a domain: each assembly is
 	 * loaded and run in a MonoDomain.
 	 */
-	domain = mono_jit_init (file);
+	domain = mono_jit_init (exe_path);
 
-	mono_tizen_jit_exec_main (domain, file, argc, argv);
+	mono_tizen_jit_exec_main (domain, exe_path, argc, argv);
 
 	retval = mono_environment_exitcode_get ();
 
@@ -253,7 +271,7 @@ CPP_DEPS += $(TMP_FILES:.cpp=.d)
 src/%.o: ../src/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: C++ Compiler'
-	$(CC) -D_DEBUG -I"$(PROJPATH)/inc" -O0 -g3 -Wall -c -fmessage-length=0 -I$(ROOTSTRAP)/usr/include/libxml2 -I$(SDKPATH)/library -I$(ROOTSTRAP)/usr/include -I$(ROOTSTRAP)/usr/include/osp  $(TC_COMPILER_MISC) $(RS_COMPILER_MISC)  -fPIE --sysroot=$(ROOTSTRAP)  -D_APP_LOG -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	$(CC) -DMONO_TIZEN_APPID=$(APPID) -D_DEBUG -I"$(PROJPATH)/inc" -O0 -g3 -Wall -c -fmessage-length=0 -I$(ROOTSTRAP)/usr/include/libxml2 -I$(SDKPATH)/library -I$(ROOTSTRAP)/usr/include -I$(ROOTSTRAP)/usr/include/osp  $(TC_COMPILER_MISC) $(RS_COMPILER_MISC)  -fPIE --sysroot=$(ROOTSTRAP)  -D_APP_LOG -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
