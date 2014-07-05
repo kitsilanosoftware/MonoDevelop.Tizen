@@ -69,9 +69,17 @@ namespace ${Namespace}
 				<!-- This is really dumb.  TODO: Figure out how to shell out to
 				     native-gen and import the whole hierarchy. -->
 
+				<!-- native-make does not create directories itself. -->
+				<Directory name="inc"/>
+
 				<Directory name="src">
 				  <File name="Entry.cpp" AddStandardHeader="True">
-<![CDATA[#include <new>
+<![CDATA[#include <FApp.h>
+#include <FBase.h>
+#include <FSystem.h>
+#include <FUi.h>
+
+#include <new>
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -81,6 +89,55 @@ extern "C"
 {
 #endif // __cplusplus
 
+#include <mono/jit/jit.h>
+#include <mono/metadata/environment.h>
+#include <mono/metadata/mono-config.h>
+#include <stdlib.h>
+
+static void
+mono_tizen_jit_exec_main (MonoDomain *domain, const char *file, int argc, char** argv)
+{
+	MonoAssembly *assembly;
+
+	assembly = mono_domain_assembly_open (domain, file);
+	if (!assembly)
+		exit (2);
+	/*
+	 * mono_jit_exec() will run the Main() method in the assembly.
+	 * The return value needs to be looked up from
+	 * System.Environment.ExitCode.
+	 */
+	mono_jit_exec (domain, assembly, argc, argv);
+}
+
+int
+mono_tizen_main(int argc, char* argv[]) {
+	MonoDomain *domain;
+	const char *file;
+	int retval;
+
+	file = "${Namespace}.dll";
+
+	/*
+	 * Load the default Mono configuration file, this is needed
+	 * if you are planning on using the dllmaps defined on the
+	 * system configuration
+	 */
+	mono_config_parse (NULL);
+	/*
+	 * mono_jit_init() creates a domain: each assembly is
+	 * loaded and run in a MonoDomain.
+	 */
+	domain = mono_jit_init (file);
+
+	mono_tizen_jit_exec_main (domain, file, argc, argv);
+
+	retval = mono_environment_exitcode_get ();
+
+	mono_jit_cleanup (domain);
+	return retval;
+}
+
 //
 // The framework calls this method as the entry method of the Tizen application.
 //
@@ -88,18 +145,13 @@ _EXPORT_ int
 OspMain(int argc, char* pArgv[])
 {
 	AppLog("Application started.");
-	ArrayList args(SingleObjectDeleter);
-	args.Construct();
-	for (int i = 0; i < argc; i++)
-	{
-		args.Add(new (std::nothrow) String(pArgv[i]));
-	}
 
-	result r = Tizen::App::UiApp::Execute(TNA1App::CreateInstance, &args);
-	TryLog(r == E_SUCCESS, "[%s] Application execution failed.", GetErrorMessage(r));
+        int r = mono_tizen_main(argc, pArgv);
+
+	TryLog(r != 0, "[%d] Application execution failed.", r);
 	AppLog("Application finished.");
 
-	return static_cast< int >(r);
+	return r;
 }
 #ifdef __cplusplus
 }
@@ -119,11 +171,11 @@ OspMain(int argc, char* pArgv[])
 	<Apps>
 		<ApiVersion>2.2</ApiVersion>
 		<Privileges></Privileges>
-		<UiApp Name="TNA1" Main="True" MenuIconVisible="True">
+		<UiApp Name="${ProjectName}" Main="True" MenuIconVisible="True">
 			<UiScalability CoordinateSystem="Logical" BaseScreenSize="Normal" LogicalCoordinate="720"></UiScalability>
 			<UiTheme SystemTheme="White"></UiTheme>
 			<DisplayNames>
-				<DisplayName Locale="eng-GB">TNA1</DisplayName>
+				<DisplayName Locale="eng-GB">${ProjectName}</DisplayName>
 			</DisplayNames>
 			<Icons>
 				<Icon Section="MainMenu" >mainmenu.png</Icon>
@@ -135,6 +187,10 @@ OspMain(int argc, char* pArgv[])
 				</File>
 
 				<Directory name="CommandLineBuild">
+
+				  <!-- native-make does not create directories itself. -->
+				  <Directory name="src"/>
+
 				  <!-- KLUDGE: This is silly, but MonoDevelop 5.0.1 keeps appending
 				       .cs to the file name if DefaultExtension is empty. -->
 				  <File name="build" DefaultExtension="_data" AddStandardHeader="False">
@@ -233,19 +289,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: TNA1.exe secondary-outputs
+all: ${ProjectName}.exe secondary-outputs
 
 # Tool invocations
-TNA1.exe: $(OBJS) $(USER_OBJS)
+${ProjectName}.exe: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C++ Linker'
-	$(CC) -o"TNA1.exe" $(OBJS) $(USER_OBJS) $(LIBS) $(TC_LINKER_MISC) $(RS_LINKER_MISC) -pie -lpthread  -Xlinker -rpath="/opt/usr/apps/$(APPID)/lib" -Xlinker -rpath="/home/developer/sdk_tools/lib" --sysroot=$(ROOTSTRAP) -L$(ROOTSTRAP)/usr/lib -L$(ROOTSTRAP)/usr/lib/osp -losp-uifw -losp-appfw -losp-image -losp-json -losp-ime -losp-net -lpthread -losp-content -losp-locations -losp-telephony -losp-uix -losp-media -losp-messaging -losp-web -losp-social -losp-wifi -losp-bluetooth -losp-nfc -losp-face -losp-secure-element -losp-speech-tts -losp-speech-stt -losp-shell -losp-shell-core -losp-vision -lxml2 -lalut -lopenal 
+	$(CC) -o"${ProjectName}.exe" $(OBJS) $(USER_OBJS) $(LIBS) $(TC_LINKER_MISC) $(RS_LINKER_MISC) -pie -lpthread  -Xlinker -rpath="/opt/usr/apps/$(APPID)/lib" -Xlinker -rpath="/home/developer/sdk_tools/lib" --sysroot=$(ROOTSTRAP) -L$(ROOTSTRAP)/usr/lib -L$(ROOTSTRAP)/usr/lib/osp -losp-uifw -losp-appfw -losp-image -losp-json -losp-ime -losp-net -lpthread -losp-content -losp-locations -losp-telephony -losp-uix -losp-media -losp-messaging -losp-web -losp-social -losp-wifi -losp-bluetooth -losp-nfc -losp-face -losp-secure-element -losp-speech-tts -losp-speech-stt -losp-shell -losp-shell-core -losp-vision -lxml2 -lalut -lopenal 
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(MO_FILES)$(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(EDJ_FILES)$(CPP_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS) TNA1.exe
+	-$(RM) $(MO_FILES)$(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(EDJ_FILES)$(CPP_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS) ${ProjectName}.exe
 	-@echo ' '
 
 secondary-outputs: $(MO_FILES) $(EDJ_FILES)
