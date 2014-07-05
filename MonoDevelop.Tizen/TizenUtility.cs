@@ -82,42 +82,15 @@ namespace MonoDevelop.Tizen
 	
 	public class TizenDevice
 	{
-		public TizenDevice (string id, string address, string username, string password)
+		public TizenDevice (string id)
 		{
-			ushort port;
-			MaybeSplitHostPort (ref address, out port);
-
 			this.Id = id;
-			this.Address = address;
-			this.Port = port;
-			this.Username = username;
-			this.Password = password;
 		}
-		
-		public string Id       { get; set; }
-		public string Address  { get; set; }
-		public ushort Port     { get; set; }
-		public string Username { get; set; }
-		public string Password { get; set; }
 
-		private static void MaybeSplitHostPort (ref string address,
-							out ushort port)
-		{
-			port = 0;
-
-			int colonAt = address.IndexOf (':');
-			if (colonAt <= 0)
-				return;
-
-			string portStr = address.Substring (colonAt + 1);
-			if (! UInt16.TryParse (portStr, out port))
-				return;
-
-			address = address.Substring (0, colonAt);
-		}
+		public string Id { get; set; }
 
 		static TizenDevice chosenDevice;
-		
+
 		public static TizenDevice GetChosenDevice ()
 		{
 			if (chosenDevice == null) {
@@ -127,7 +100,7 @@ namespace MonoDevelop.Tizen
 			}
 			return chosenDevice;
 		}
-		
+
 		public static void ResetChosenDevice ()
 		{
 			chosenDevice = null;
