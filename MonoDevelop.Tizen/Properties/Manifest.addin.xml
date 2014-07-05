@@ -12,6 +12,10 @@
     <Addin id="::MonoDevelop.Ide" version="5.0" />
   </Dependencies>
 
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+		<FileTemplateType name = "NoBomFile" class = "MonoDevelop.Tizen.NoBomFileDescriptionTemplate"/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id       = "TizenNativeProject"
 		                 file     = "Templates/TizenNativeProject.xpt.xml" />

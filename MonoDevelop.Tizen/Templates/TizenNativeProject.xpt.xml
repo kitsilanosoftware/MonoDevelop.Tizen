@@ -193,15 +193,15 @@ OspMain(int argc, char* pArgv[])
 
 				  <!-- KLUDGE: This is silly, but MonoDevelop 5.0.1 keeps appending
 				       .cs to the file name if DefaultExtension is empty. -->
-				  <File name="build" DefaultExtension="_data" AddStandardHeader="False">
+				  <NoBomFile name="build" DefaultExtension="_data" AddStandardHeader="False">
 <![CDATA[PLATFORM_VER:Tizen 2.2
 ARCHITECTURE:i386
 TOOLCHAIN:LLVM-3.1
 TYPE:app]]>
-				  </File>
+				  </NoBomFile>
 				  <!-- KLUDGE: This is silly, but MonoDevelop 5.0.1 keeps appending
 				       .cs to the file name if DefaultExtension is empty. -->
-				  <File name="make" DefaultExtension="file" AddStandardHeader="False">
+				  <NoBomFile name="make" DefaultExtension="file" AddStandardHeader="False">
 <![CDATA[################################################################################
 # Automatically-generated file. Do not edit!
 ################################################################################
@@ -310,7 +310,7 @@ secondary-outputs: $(MO_FILES) $(EDJ_FILES)
 .SECONDARY:
 
 -include ../makefile.targets]]>
-				  </File>
+				  </NoBomFile>
 				</Directory>
 
 				<Directory name="shared">
