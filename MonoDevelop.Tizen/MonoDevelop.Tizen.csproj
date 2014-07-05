@@ -90,10 +90,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
-    <EmbeddedResource Include="Templates\TizenConsoleProject.xpt.xml">
+    <EmbeddedResource Include="Templates\TizenNativeProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <LogicalName>TizenConsoleProject.xpt.xml</LogicalName>
+      <LogicalName>TizenNativeProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <Content Include="Templates\mainmenu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

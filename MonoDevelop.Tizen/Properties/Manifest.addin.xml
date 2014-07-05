@@ -13,8 +13,8 @@
   </Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id       = "TizenConsoleProject"
-		                 file     = "Templates/TizenConsoleProject.xpt.xml" />
+		<ProjectTemplate id       = "TizenNativeProject"
+		                 file     = "Templates/TizenNativeProject.xpt.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

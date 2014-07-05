@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2014 Kitsilano Software Inc.
+
+  This file is part of MonoTizen.
+
+  MonoTizen is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  MonoTizen is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with MonoTizen.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<Template originator   = "Kitsilano Software Inc."
+	  created      = "2014/07/03"
+	  lastModified = "2014/07/05">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Tizen Native Project</_Name>
+		<_Category>C#/Tizen</_Category>
+		<Icon>md-project</Icon>
+		<LanguageName>C#</LanguageName>
+		<_Description>A native (tpk) project for Tizen.</_Description>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Main.cs"/>
+	</Actions>
+
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name = "${ProjectName}" directory = "." type = "Tizen">
+			<Options Target = "WinExe"/>
+
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+			</References>
+
+			<Files>
+
+				<File name="Main.cs" AddStandardHeader="True">
+<![CDATA[using System;
+
+namespace ${Namespace}
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			Console.WriteLine("Hello, Tizen!");
+		}
+	}
+}]]>
+				</File>
+
+				<!-- This is really dumb.  TODO: Figure out how to shell out to
+				     native-gen and import the whole hierarchy. -->
+
+				<Directory name="src">
+				  <File name="Entry.cpp" AddStandardHeader="True">
+<![CDATA[#include <new>
+
+using namespace Tizen::Base;
+using namespace Tizen::Base::Collection;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
+//
+// The framework calls this method as the entry method of the Tizen application.
+//
+_EXPORT_ int
+OspMain(int argc, char* pArgv[])
+{
+	AppLog("Application started.");
+	ArrayList args(SingleObjectDeleter);
+	args.Construct();
+	for (int i = 0; i < argc; i++)
+	{
+		args.Add(new (std::nothrow) String(pArgv[i]));
+	}
+
+	result r = Tizen::App::UiApp::Execute(TNA1App::CreateInstance, &args);
+	TryLog(r == E_SUCCESS, "[%s] Application execution failed.", GetErrorMessage(r));
+	AppLog("Application finished.");
+
+	return static_cast< int >(r);
+}
+#ifdef __cplusplus
+}
+#endif // __cplusplus]]>
+				  </File>
+				</Directory>
+
+				<File name="manifest.xml" AddStandardHeader="False">
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<Manifest xmlns="http://schemas.tizen.org/2012/12/manifest">
+	<Id>VlM9T8deL1</Id>
+	<Version>1.0.0</Version>
+	<Type>C++App</Type>
+	<Requirements>
+	<Feature Name="http://tizen.org/feature/platform.native.api.version">2.2</Feature>
+	</Requirements>
+	<Apps>
+		<ApiVersion>2.2</ApiVersion>
+		<Privileges></Privileges>
+		<UiApp Name="TNA1" Main="True" MenuIconVisible="True">
+			<UiScalability CoordinateSystem="Logical" BaseScreenSize="Normal" LogicalCoordinate="720"></UiScalability>
+			<UiTheme SystemTheme="White"></UiTheme>
+			<DisplayNames>
+				<DisplayName Locale="eng-GB">TNA1</DisplayName>
+			</DisplayNames>
+			<Icons>
+				<Icon Section="MainMenu" >mainmenu.png</Icon>
+			</Icons>
+
+		</UiApp>
+	</Apps>
+</Manifest>]]>
+				</File>
+
+				<Directory name="CommandLineBuild">
+				  <!-- KLUDGE: This is silly, but MonoDevelop 5.0.1 keeps appending
+				       .cs to the file name if DefaultExtension is empty. -->
+				  <File name="build" DefaultExtension="_data" AddStandardHeader="False">
+<![CDATA[PLATFORM_VER:Tizen 2.2
+ARCHITECTURE:i386
+TOOLCHAIN:LLVM-3.1
+TYPE:app]]>
+				  </File>
+				  <!-- KLUDGE: This is silly, but MonoDevelop 5.0.1 keeps appending
+				       .cs to the file name if DefaultExtension is empty. -->
+				  <File name="make" DefaultExtension="file" AddStandardHeader="False">
+<![CDATA[################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+-include ../makefile.init
+
+RM := rm -rf
+
+# All of the sources participating in the build are defined here
+# -include sources.mk
+O_SRCS := 
+PO_SRCS := 
+CPP_SRCS := 
+C_UPPER_SRCS := 
+C_SRCS := 
+S_UPPER_SRCS := 
+OBJ_SRCS := 
+EDC_SRCS := 
+ASM_SRCS := 
+CXX_SRCS := 
+C++_SRCS := 
+CC_SRCS := 
+MO_FILES := 
+OBJS := 
+C++_DEPS := 
+C_DEPS := 
+CC_DEPS := 
+EDJ_FILES := 
+CPP_DEPS := 
+EXECUTABLES := 
+C_UPPER_DEPS := 
+CXX_DEPS := 
+
+# Every subdirectory with source files must be described here
+SUBDIRS := \
+src \
+
+# -include src/subdir.mk
+# Add inputs and outputs from these tool invocations to the build variables 
+CPP_SRCS += $(wildcard ../src/*.cpp)
+
+TMP_FILES += $(patsubst ../src/%, ./src/%, $(CPP_SRCS))
+
+OBJS += $(TMP_FILES:.cpp=.o)
+
+CPP_DEPS += $(TMP_FILES:.cpp=.d)
+
+# Each subdirectory must supply rules for building sources it contributes
+src/%.o: ../src/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: C++ Compiler'
+	$(CC) -D_DEBUG -I"$(PROJPATH)/inc" -O0 -g3 -Wall -c -fmessage-length=0 -I$(ROOTSTRAP)/usr/include/libxml2 -I$(SDKPATH)/library -I$(ROOTSTRAP)/usr/include -I$(ROOTSTRAP)/usr/include/osp  $(TC_COMPILER_MISC) $(RS_COMPILER_MISC)  -fPIE --sysroot=$(ROOTSTRAP)  -D_APP_LOG -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+
+# -include objects.mk
+USER_OBJS :=
+
+LIBS :=
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(C++_DEPS)),)
+-include $(C++_DEPS)
+endif
+ifneq ($(strip $(C_DEPS)),)
+-include $(C_DEPS)
+endif
+ifneq ($(strip $(CC_DEPS)),)
+-include $(CC_DEPS)
+endif
+ifneq ($(strip $(CPP_DEPS)),)
+-include $(CPP_DEPS)
+endif
+ifneq ($(strip $(CXX_DEPS)),)
+-include $(CXX_DEPS)
+endif
+ifneq ($(strip $(C_UPPER_DEPS)),)
+-include $(C_UPPER_DEPS)
+endif
+endif
+
+-include ../makefile.defs
+
+# Add inputs and outputs from these tool invocations to the build variables 
+
+# All Target
+all: TNA1.exe secondary-outputs
+
+# Tool invocations
+TNA1.exe: $(OBJS) $(USER_OBJS)
+	@echo 'Building target: $@'
+	@echo 'Invoking: C++ Linker'
+	$(CC) -o"TNA1.exe" $(OBJS) $(USER_OBJS) $(LIBS) $(TC_LINKER_MISC) $(RS_LINKER_MISC) -pie -lpthread  -Xlinker -rpath="/opt/usr/apps/$(APPID)/lib" -Xlinker -rpath="/home/developer/sdk_tools/lib" --sysroot=$(ROOTSTRAP) -L$(ROOTSTRAP)/usr/lib -L$(ROOTSTRAP)/usr/lib/osp -losp-uifw -losp-appfw -losp-image -losp-json -losp-ime -losp-net -lpthread -losp-content -losp-locations -losp-telephony -losp-uix -losp-media -losp-messaging -losp-web -losp-social -losp-wifi -losp-bluetooth -losp-nfc -losp-face -losp-secure-element -losp-speech-tts -losp-speech-stt -losp-shell -losp-shell-core -losp-vision -lxml2 -lalut -lopenal 
+	@echo 'Finished building target: $@'
+	@echo ' '
+
+# Other Targets
+clean:
+	-$(RM) $(MO_FILES)$(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(EDJ_FILES)$(CPP_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS) TNA1.exe
+	-@echo ' '
+
+secondary-outputs: $(MO_FILES) $(EDJ_FILES)
+
+.PHONY: all clean dependents
+.SECONDARY:
+
+-include ../makefile.targets]]>
+				  </File>
+				</Directory>
+
+				<Directory name="shared">
+				  <Directory name="res">
+				    <Directory name="screen-density-xhigh">
+				      <RawFile name="mainmenu.png" src="mainmenu.png"/>
+				    </Directory>
+				  </Directory>
+				</Directory>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
