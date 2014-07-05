@@ -38,9 +38,10 @@ namespace MonoDevelop.Tizen
 
 		private string GetSdbPath ()
 		{
-			var path = Config.SdkPath;
-
-			return Path.Combine(path, "tools", "sdb");
+			// TODO: Make SDK installation location a
+			// project configuration item.  But for now,
+			// let's just let the user update her $PATH.
+			return "sdb";
 		}
 
 		private string Escape (string arg)
