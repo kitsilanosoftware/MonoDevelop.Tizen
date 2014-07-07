@@ -148,6 +148,7 @@ namespace MonoDevelop.Tizen
 			void BeginTask (string task);
 			void EndTask ();
 			void AddError (string message);
+			void WriteLine (string line);
 		}
 
 		public class BuildReporter : INativeToolReporter
@@ -176,6 +177,11 @@ namespace MonoDevelop.Tizen
 			{
 				res.AddError (message);
 			}
+
+			public void WriteLine (string line)
+			{
+				monitor.Log.WriteLine (line);
+			}
 		}
 
 		public class BasicReporter : INativeToolReporter
@@ -191,17 +197,22 @@ namespace MonoDevelop.Tizen
 			public void BeginTask (string task)
 			{
 				this.task = task;
-				writer.WriteLine ("Begin task: {0}", task);
+				writer.WriteLine ("*** Begin task: {0}", task);
 			}
 
 			public void EndTask ()
 			{
-				writer.WriteLine ("End task: {0}", task);
+				writer.WriteLine ("*** End task: {0}", task);
 			}
 
 			public void AddError (string message)
 			{
-				writer.WriteLine ("Error: {0}", message);
+				writer.WriteLine ("*** Error: {0}", message);
+			}
+
+			public void WriteLine (string line)
+			{
+				writer.WriteLine (line);
 			}
 		}
 
@@ -236,9 +247,15 @@ namespace MonoDevelop.Tizen
 			psi.FileName = GetNativeTool (tool);
 			psi.WorkingDirectory = buildDir;
 			psi.Arguments = arguments;
+			psi.RedirectStandardOutput = true;
+			psi.RedirectStandardError = true;
 
 			reporter.BeginTask (string.Format ("Invoking {0}...", tool));
 			p.Start ();
+
+			TizenUtility.Copier.Start (p.StandardOutput, reporter.WriteLine);
+			TizenUtility.Copier.Start (p.StandardError, reporter.WriteLine);
+
 			p.WaitForExit ();
 			reporter.EndTask ();
 
