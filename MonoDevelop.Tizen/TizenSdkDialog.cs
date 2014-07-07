@@ -47,6 +47,16 @@ namespace MonoDevelop.Tizen
 
 			sdkFolderEntry.Path = PropertyService.Get<string> ("TizenSdk.Folder") ?? "";
 			deviceEntry.Text = PropertyService.Get<string> ("TizenDevice.Id") ?? "";
+
+			okButton.Sensitive = CheckSdb ();
+			sdkFolderEntry.PathChanged += delegate {
+				okButton.Sensitive = CheckSdb ();
+			};
+		}
+
+		private bool CheckSdb ()
+		{
+			return TizenSdkSdb.GetSdbPathFromSdkPath (sdkFolderEntry.Path) != null;
 		}
 
 		void Build ()
