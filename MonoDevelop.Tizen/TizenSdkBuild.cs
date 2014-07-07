@@ -79,10 +79,15 @@ namespace MonoDevelop.Tizen
 			var baseDir = project.BaseDirectory;
 			var incDir = Path.Combine (baseDir, "mono");
 			var incMonoDir = Path.Combine (incDir, "mono");
-			if (Directory.Exists (incMonoDir))
+			if (Directory.Exists (incMonoDir)) {
+				monitor.Log.WriteLine ("{0} exists; skipping Mono runtime setup.", incMonoDir);
 				return true;
+			}
 
-			var zis = new ZipInputStream (File.OpenRead (SdkInfo.MonoRuntimePath));
+			var rtPath = SdkInfo.MonoRuntimePath;
+			monitor.BeginTask (string.Format ("Unpacking Mono runtime {0}...", rtPath), 1);
+
+			var zis = new ZipInputStream (File.OpenRead (rtPath));
 			var buffer = new byte[4096];
 			for (var ze = zis.GetNextEntry (); ze != null; ze = zis.GetNextEntry ()) {
 				var target = Path.Combine (baseDir, ze.Name);
@@ -101,6 +106,8 @@ namespace MonoDevelop.Tizen
 					}
 				}
 			}
+
+			monitor.EndTask ();
 
 			return true;
 		}
@@ -122,7 +129,9 @@ namespace MonoDevelop.Tizen
 					if (File.Exists (unversionedSo))
 						return unversionedSo;
 
+					monitor.BeginTask ("Installing unversioned .so...", 1);
 					File.Copy (de, unversionedSo);
+					monitor.EndTask ();
 					return unversionedSo;
 				}
 			}
@@ -142,6 +151,8 @@ namespace MonoDevelop.Tizen
 			var nativeMakePath = Path.Combine (
 				new string[] { SdkInfo.SdkPath, "tools", "ide", "bin", "native-make" });
 
+			monitor.BeginTask ("Invoking native-make...", 1);
+
 			var p = new Process ();
 			var psi = p.StartInfo;
 
@@ -151,6 +162,7 @@ namespace MonoDevelop.Tizen
 
 			p.Start ();
 			p.WaitForExit ();
+			monitor.EndTask ();
 
 			if (p.ExitCode != 0) {
 				res.AddError (string.Format ("native-make failed with code '{0}'", p.ExitCode));
