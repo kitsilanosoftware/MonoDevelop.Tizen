@@ -58,7 +58,7 @@ namespace MonoDevelop.Tizen
 				TizenUtility.Upload (sdkInfo, cmd.Config, null, console.Out, console.Error);
 			//}
 
-			var proc = CreateProcess (cmd, null, sdkInfo, console.Out.Write, console.Error.Write);
+			var proc = CreateProcess (cmd, null, sdkInfo, console.Out.WriteLine, console.Error.WriteLine);
 			proc.Start ();
 			return proc;
 		}
@@ -132,8 +132,8 @@ namespace MonoDevelop.Tizen
 			var p = sdb.ShellNoWait (command);
 			this.process = p;
 
-			Copier.Start (p.StandardOutput, stdOut);
-			Copier.Start (p.StandardError, stdErr);
+			TizenUtility.Copier.Start (p.StandardOutput, stdOut);
+			TizenUtility.Copier.Start (p.StandardError, stdErr);
 			p.WaitForExit ();
 
 			ExitCode = p.ExitCode;
@@ -176,42 +176,5 @@ namespace MonoDevelop.Tizen
 		public bool IsCompleted { get; private set; }
 		public bool Success { get; private set; }
 		public bool SuccessWithWarnings { get; private set; }
-	}
-
-	class Copier
-	{
-		TextReader source;
-		Action<string> target;
-
-		public static void Start (TextReader source,
-					  Action<string> target)
-		{
-			var copier = new Copier (source, target);
-			var ts = new ThreadStart (copier.Run);
-			var thread = new Thread (ts);
-			thread.Start ();
-		}
-
-		private Copier (TextReader source,  Action<string> target)
-		{
-			this.source = source;
-			this.target = target;
-		}
-
-		private void Run ()
-		{
-			try {
-				for (;;) {
-					var line = source.ReadLine ();
-
-					if (line == null)
-						break;
-
-					target (line + "\n");
-				}
-			} catch (IOException) {
-				// Stop copying.
-			}
-		}
 	}
 }

@@ -88,5 +88,40 @@ namespace MonoDevelop.Tizen
 			// deadline.
 			return '"' + arg + '"';
 		}
+
+		public class Copier
+		{
+			TextReader source;
+			Action<string> target;
+
+			public static void Start (TextReader source,
+						  Action<string> target)
+			{
+				var copier = new Copier (source, target);
+				var ts = new ThreadStart (copier.Run);
+				var thread = new Thread (ts);
+				thread.Start ();
+			}
+
+			private Copier (TextReader source,  Action<string> target)
+			{
+				this.source = source;
+				this.target = target;
+			}
+
+			private void Run ()
+			{
+				try {
+					for (;;) {
+						var line = source.ReadLine ();
+						if (line == null)
+							break;
+						target (line);
+					}
+				} catch (IOException) {
+					// Stop copying.
+				}
+			}
+		}
 	}
 }
