@@ -10,6 +10,8 @@
   <Dependencies>
     <Addin id="::MonoDevelop.Core" version="5.0" />
     <Addin id="::MonoDevelop.Ide" version="5.0" />
+    <Addin id="::MonoDevelop.Debugger" version="5.0"/>
+    <Addin id="::MonoDevelop.Debugger.Soft" version="5.0"/>
   </Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
