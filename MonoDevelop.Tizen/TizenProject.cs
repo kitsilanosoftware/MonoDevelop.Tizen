@@ -67,6 +67,22 @@ namespace MonoDevelop.Tizen
 		
 		#endregion
 		
+		#region Build
+
+		protected override BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			// Phase 1: Perform normal .NET project build.
+			var res = base.DoBuild (monitor, configuration);
+
+			// Phase 2: Tizen SDK wrapping, linking, and packaging.
+			var config = (TizenProjectConfiguration) GetConfiguration (configuration);
+			TizenSdkBuild.DoBuild (monitor, config, res);
+
+			return res;
+		}
+
+		#endregion
+
 		#region Execution
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,

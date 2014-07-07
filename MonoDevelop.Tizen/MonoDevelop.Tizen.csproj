@@ -85,6 +85,7 @@
     <Compile Include="TizenSoftDebuggerSession.cs" />
     <Compile Include="TizenSdkSdb.cs" />
     <Compile Include="NoBomFileDescriptionTemplate.cs" />
+    <Compile Include="TizenSdkBuild.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
