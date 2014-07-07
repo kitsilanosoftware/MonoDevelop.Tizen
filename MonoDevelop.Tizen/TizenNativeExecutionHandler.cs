@@ -41,81 +41,59 @@ namespace MonoDevelop.Tizen
 			IConsole console)
 		{
 			var cmd = (TizenExecutionCommand) command;
-			var targetDevice = TizenSdkInfo.GetSdkInfo ();
-			if (targetDevice == null) {
-				return new NullProcessAsyncOperation (false);
-			}
+			var config = cmd.Config;
+			var sdkInfo = TizenSdkInfo.GetSdkInfo ();
+			if (sdkInfo == null)
+				return Finish (false);
 
-			var conf = cmd.Config;
-			string[] extraFiles = GetExtraUploads (conf);
-			TizenUtility.Upload (targetDevice, conf, extraFiles,
-					     console.Out, console.Error);
+			var project = config.ParentItem as Project;
+			var tpkPath = FindTpkPath (project);
+			if (tpkPath == null)
+				return Finish (false);
 
-			var proc = CreateProcess (cmd, targetDevice,
-						  console.Out.Write,
-						  console.Error.Write);
-			proc.Start ();
-			return proc;
+			var sdkBuild = new TizenSdkBuild (config, sdkInfo);
+			if (!sdkBuild.DoNativeInstall (tpkPath, console))
+				return Finish (false);
+
+			var tpkId = ExtractTpkId (tpkPath);
+			if (tpkId == null)
+				return Finish (false);
+
+			var success = sdkBuild.DoNativeRun (tpkId, console);
+			return Finish (success);
 		}
 
-		private static string[] GetExtraUploads (
-			TizenProjectConfiguration conf)
+		private IProcessAsyncOperation Finish (bool success)
 		{
-			var dnp = conf.ParentItem as Project;
-			var files = dnp.Files;
-			var pf = files.GetFileWithVirtualPath ("Main.c");
-			if (pf == null)
+			return new NullProcessAsyncOperation (success);
+		}
+
+		private string FindTpkPath (Project project)
+		{
+			var buildDir = Path.Combine (project.BaseDirectory, "CommandLineBuild");
+			var tpks = new List<string> (Directory.EnumerateFiles (buildDir, "*.tpk"));
+
+			if (tpks.Count == 0)
 				return null;
 
-			var s = pf.FilePath.ToString ();
-			return new string[] { s };
+			tpks.Sort (delegate (string a, string b) {
+				DateTime ta = File.GetLastWriteTime (a);
+				DateTime tb = File.GetLastWriteTime (b);
+
+				return tb.CompareTo (ta);
+			});
+
+			return tpks [0];
 		}
 
-		private static SdbShellCommand CreateProcess (
-			TizenExecutionCommand cmd,
-			TizenSdkInfo sdkInfo,
-			Action<string> stdOut,
-			Action<string> stdErr)
+		private string ExtractTpkId (string tpkPath)
 		{
-			string shCommand = GetShCommand (cmd);
+			var fileName = Path.GetFileName (tpkPath);
+			var dashAt = fileName.IndexOf ('-');
+			if (dashAt <= 0)
+				return null;
 
-			var sdb = new TizenSdkSdb (cmd.Config, sdkInfo);
-
-			return new SdbShellCommand (sdb, shCommand,
-						    stdOut, stdErr);
-		}
-
-		private static string GetShCommand (
-			TizenExecutionCommand cmd)
-		{
-			var sb = new StringBuilder ();
-			foreach (var arg in cmd.EnvironmentVariables)
-				sb.AppendFormat ("export {0}='{1}' && ",
-						 arg.Key, arg.Value);
-
-			// Experiment: link statically to the Mono
-			// runtime, and dynamically to the rest of the
-			// environment--but pkg-config does not seem
-			// to let us do that directly.  TODO: Optional?
-			bool staticMono = true;
-			var mtf = "MonoTizen_gcc_flags";
-
-			// We're using backquotes because SDB
-			// execution is not robust wrt. quoting.
-			// TODO: Fix.
-			sb.AppendFormat ("{0}=`pkg-config{1} --cflags --libs mono-2` && ",
-					 mtf, staticMono ? " --static" : "");
-
-			if (staticMono)
-				sb.AppendFormat ("{0}=`echo ${0} | sed 's@ -lmono[^ ]* @ -Wl,-static&-Wl,-Bdynamic @g'` && ",
-						 mtf);
-
-			sb.AppendFormat ("gcc -g -o {0}/{1} {0}/Main.c ${2} && ",
-					 cmd.DeviceProjectPath, cmd.Name, mtf);
-			sb.AppendFormat ("cd {0} && ./{1}",
-					 cmd.DeviceProjectPath, cmd.Name);
-
-			return sb.ToString ();
+			return fileName.Substring (0, dashAt);
 		}
 	}
 }

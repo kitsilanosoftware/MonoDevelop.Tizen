@@ -55,7 +55,7 @@ namespace MonoDevelop.Tizen
 	{
 		TizenNativeExecutionHandler handler;
 
-		public string Name { get { return "Tizen Device, Native Executable"; } }
+		public string Name { get { return "Tizen Device, TPK-packaged"; } }
 
 		public string Id { get { return "TizenNativeExecutionMode"; } }
 
