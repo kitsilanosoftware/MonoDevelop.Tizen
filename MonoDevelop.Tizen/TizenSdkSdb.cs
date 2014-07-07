@@ -36,12 +36,24 @@ namespace MonoDevelop.Tizen
 		public TizenProjectConfiguration Config { get; set; }
 		TizenSdkInfo SdkInfo { get; set; }
 
+		public static string GetSdbPathFromSdkPath (string sdkPath)
+		{
+			var toolsPath = Path.Combine (sdkPath, "tools");
+			var sdbPath = Path.Combine (toolsPath, "sdb");
+
+			if (File.Exists (sdbPath))
+				return sdbPath;
+
+			sdbPath = Path.Combine (toolsPath, "sdb.exe");
+			if (File.Exists (sdbPath))
+				return sdbPath;
+
+			return null;
+		}
+
 		private string GetSdbPath ()
 		{
-			// TODO: Make SDK installation location a
-			// project configuration item.  But for now,
-			// let's just let the user update her $PATH.
-			return "sdb";
+			return GetSdbPathFromSdkPath (SdkInfo.SdkPath);
 		}
 
 		private string Escape (string arg)
