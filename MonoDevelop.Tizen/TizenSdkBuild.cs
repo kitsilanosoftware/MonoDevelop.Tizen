@@ -52,6 +52,9 @@ namespace MonoDevelop.Tizen
 
 			File.Delete (unversionedSo);
 
+			if (!DoNativePackaging (monitor, res))
+				return false;
+
 			return true;
 		}
 
@@ -189,6 +192,30 @@ namespace MonoDevelop.Tizen
 					   BuildResult res)
 		{
 			return InvokeNativeTool (monitor, res, "native-make", "");
+		}
+
+		private string Escape (string arg)
+		{
+			return TizenUtility.EscapeProcessArgument (arg);
+		}
+
+		private string GetNativePackagingArguments ()
+		{
+			var sb = new StringBuilder ();
+
+			sb.AppendFormat ("-ak {0} ", Escape (SdkInfo.AuthorKey));
+			// Tizen passwords are not sensitive, are they?
+			sb.AppendFormat ("-ap {0} ", Escape (SdkInfo.AuthorKeyPassword));
+
+			return sb.ToString ();
+		}
+
+		private bool DoNativePackaging (IProgressMonitor monitor,
+						BuildResult res)
+		{
+			var arguments = GetNativePackagingArguments ();
+
+			return InvokeNativeTool (monitor, res, "native-packaging", arguments);
 		}
 	}
 }
