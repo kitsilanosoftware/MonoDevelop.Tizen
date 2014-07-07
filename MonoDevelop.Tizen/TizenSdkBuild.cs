@@ -22,6 +22,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using ICSharpCode.SharpZipLib.Zip;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Tizen
 {
@@ -142,11 +143,73 @@ namespace MonoDevelop.Tizen
 			return null;
 		}
 
-		private string GetNativeBuildDir (BuildResult res)
+		interface INativeToolReporter
+		{
+			void BeginTask (string task);
+			void EndTask ();
+			void AddError (string message);
+		}
+
+		public class BuildReporter : INativeToolReporter
+		{
+			private IProgressMonitor monitor;
+			private BuildResult res;
+
+			public BuildReporter (IProgressMonitor monitor,
+					      BuildResult res)
+			{
+				this.monitor = monitor;
+				this.res = res;
+			}
+
+			public void BeginTask (string task)
+			{
+				monitor.BeginTask (task, 1);
+			}
+
+			public void EndTask ()
+			{
+				monitor.EndTask ();
+			}
+
+			public void AddError (string message)
+			{
+				res.AddError (message);
+			}
+		}
+
+		public class BasicReporter : INativeToolReporter
+		{
+			private TextWriter writer;
+			private string task;
+
+			public BasicReporter (TextWriter writer)
+			{
+				this.writer = writer;
+			}
+
+			public void BeginTask (string task)
+			{
+				this.task = task;
+				writer.WriteLine ("Begin task: {0}", task);
+			}
+
+			public void EndTask ()
+			{
+				writer.WriteLine ("End task: {0}", task);
+			}
+
+			public void AddError (string message)
+			{
+				writer.WriteLine ("Error: {0}", message);
+			}
+		}
+
+		private string GetNativeBuildDir (INativeToolReporter reporter)
 		{
 			var buildDir = GetProjectSubdir ("CommandLineBuild");
 			if (!Directory.Exists (buildDir)) {
-				res.AddError (string.Format ("'{0}' is not a directory.", buildDir));
+				reporter.AddError (string.Format ("'{0}' is not a directory.", buildDir));
 				return null;
 			}
 			return buildDir;
@@ -158,12 +221,11 @@ namespace MonoDevelop.Tizen
 				new string[] { SdkInfo.SdkPath, "tools", "ide", "bin", tool });
 		}
 
-		private bool InvokeNativeTool (IProgressMonitor monitor,
-					       BuildResult res,
+		private bool InvokeNativeTool (INativeToolReporter reporter,
 					       string tool,
 					       string arguments)
 		{
-			var buildDir = GetNativeBuildDir (res);
+			var buildDir = GetNativeBuildDir (reporter);
 			if (buildDir == null)
 				return false;
 
@@ -175,13 +237,13 @@ namespace MonoDevelop.Tizen
 			psi.WorkingDirectory = buildDir;
 			psi.Arguments = arguments;
 
-			monitor.BeginTask (string.Format ("Invoking {0}...", tool), 1);
+			reporter.BeginTask (string.Format ("Invoking {0}...", tool));
 			p.Start ();
 			p.WaitForExit ();
-			monitor.EndTask ();
+			reporter.EndTask ();
 
 			if (p.ExitCode != 0) {
-				res.AddError (string.Format ("{0} failed with code '{1}'", tool, p.ExitCode));
+				reporter.AddError (string.Format ("{0} failed with code '{1}'", tool, p.ExitCode));
 				return false;
 			}
 
@@ -191,7 +253,7 @@ namespace MonoDevelop.Tizen
 		private bool DoNativeMake (IProgressMonitor monitor,
 					   BuildResult res)
 		{
-			return InvokeNativeTool (monitor, res, "native-make", "");
+			return InvokeNativeTool (new BuildReporter (monitor, res), "native-make", "");
 		}
 
 		private string Escape (string arg)
@@ -215,7 +277,7 @@ namespace MonoDevelop.Tizen
 		{
 			var arguments = GetNativePackagingArguments ();
 
-			return InvokeNativeTool (monitor, res, "native-packaging", arguments);
+			return InvokeNativeTool (new BuildReporter (monitor, res), "native-packaging", arguments);
 		}
 	}
 }
