@@ -34,8 +34,14 @@ namespace MonoDevelop.Tizen
 			if (!EnsureMonoRuntime (monitor, config, res))
 				return false;
 
+			var unversionedSo = CreateUnversionedSo (monitor, config, res);
+			if (unversionedSo == null)
+				return false;
+
 			if (!DoNativeMake (monitor, config, res))
 				return false;
+
+			File.Delete (unversionedSo);
 
 			return true;
 		}
@@ -84,6 +90,37 @@ namespace MonoDevelop.Tizen
 			}
 
 			return true;
+		}
+
+		private static string CreateUnversionedSo (IProgressMonitor monitor,
+							   TizenProjectConfiguration config,
+							   BuildResult res)
+		{
+			var project = config.ParentItem as Project;
+			if (project == null)
+				return null;
+
+			var baseDir = project.BaseDirectory;
+			var lib = Path.Combine (baseDir, "lib");
+			if (!Directory.Exists (lib)) {
+				res.AddError (string.Format ("'{0}' is not a directory.", lib));
+				return null;
+			}
+
+			var libNameAt = lib.Length + 1;
+			foreach (var de in Directory.EnumerateFiles (lib, "libmono*.so.*")) {
+				var extAt = de.LastIndexOf (".so.");
+				if (extAt > libNameAt) {
+					var unversionedSo = de.Substring (0, extAt) + ".so";
+					if (File.Exists (unversionedSo))
+						return unversionedSo;
+
+					File.Copy (de, unversionedSo);
+					return unversionedSo;
+				}
+			}
+
+			return null;
 		}
 
 		private static bool DoNativeMake (IProgressMonitor monitor,
