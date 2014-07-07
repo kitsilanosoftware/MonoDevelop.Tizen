@@ -27,12 +27,15 @@ namespace MonoDevelop.Tizen
 {
 	public class TizenSdkBuild
 	{
-		public TizenSdkBuild (TizenProjectConfiguration config)
+		public TizenSdkBuild (TizenProjectConfiguration config,
+				      TizenSdkInfo sdkInfo)
 		{
 			this.Config = config;
+			this.SdkInfo = sdkInfo;
 		}
 
 		public TizenProjectConfiguration Config { get; set; }
+		TizenSdkInfo SdkInfo { get; set; }
 
 		public bool DoNativeBuild (IProgressMonitor monitor,
 					   BuildResult res)
@@ -137,11 +140,14 @@ namespace MonoDevelop.Tizen
 				return false;
 			}
 
+			var nativeMakePath = Path.Combine (
+				new string[] { SdkInfo.SdkPath, "tools", "ide", "bin", "native-make" });
+
 			var p = new Process ();
 			var psi = p.StartInfo;
 
 			psi.UseShellExecute = false;
-			psi.FileName = "native-make";
+			psi.FileName = nativeMakePath;
 			psi.WorkingDirectory = buildDir;
 
 			p.Start ();
