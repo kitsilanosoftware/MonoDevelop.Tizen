@@ -279,5 +279,23 @@ namespace MonoDevelop.Tizen
 
 			return InvokeNativeTool (new BuildReporter (monitor, res), "native-packaging", arguments);
 		}
+
+		private string GetNativeInstallArguments (string tpkPath)
+		{
+			var sb = new StringBuilder ();
+
+			if (!string.IsNullOrEmpty (SdkInfo.DeviceId))
+				sb.AppendFormat ("--serial {0} ", Escape (SdkInfo.DeviceId));
+			sb.AppendFormat ("-p {0}", Escape (tpkPath));
+
+			return sb.ToString ();
+		}
+
+		public bool DoNativeInstall (string tpkPath, IConsole console)
+		{
+			var arguments = GetNativeInstallArguments (tpkPath);
+
+			return InvokeNativeTool (new BasicReporter (console.Out), "native-install", arguments);
+		}
 	}
 }
