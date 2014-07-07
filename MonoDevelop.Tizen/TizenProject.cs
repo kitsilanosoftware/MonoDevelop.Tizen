@@ -77,6 +77,11 @@ namespace MonoDevelop.Tizen
 			// Phase 2: Tizen SDK wrapping, linking, and packaging.
 			var config = (TizenProjectConfiguration) GetConfiguration (configuration);
 			var sdkInfo = TizenSdkInfo.GetSdkInfo ();
+			if (sdkInfo == null) {
+				res.AddError ("SDK information not provided.");
+				return res;
+			}
+
 			var sdkBuild = new TizenSdkBuild (config, sdkInfo);
 			sdkBuild.DoNativeBuild (monitor, res);
 
