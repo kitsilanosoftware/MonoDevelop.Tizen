@@ -41,7 +41,7 @@ namespace MonoDevelop.Tizen
 			IConsole console)
 		{
 			var cmd = (TizenExecutionCommand) command;
-			var targetDevice = TizenDevice.GetChosenDevice ();
+			var targetDevice = TizenSdkInfo.GetSdkInfo ();
 			if (targetDevice == null) {
 				return new NullProcessAsyncOperation (false);
 			}
@@ -73,13 +73,13 @@ namespace MonoDevelop.Tizen
 
 		private static SdbShellCommand CreateProcess (
 			TizenExecutionCommand cmd,
-			TizenDevice device,
+			TizenSdkInfo sdkInfo,
 			Action<string> stdOut,
 			Action<string> stdErr)
 		{
 			string shCommand = GetShCommand (cmd);
 
-			var sdb = new TizenSdkSdb (cmd.Config, device);
+			var sdb = new TizenSdkSdb (cmd.Config, sdkInfo);
 
 			return new SdbShellCommand (sdb, shCommand,
 						    stdOut, stdErr);

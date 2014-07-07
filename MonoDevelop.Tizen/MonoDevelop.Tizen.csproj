@@ -77,7 +77,8 @@
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="TizenExecutionModeSet.cs" />
     <Compile Include="TizenNativeExecutionHandler.cs" />
-    <Compile Include="TizenDevicePicker.cs" />
+    <Compile Include="TizenSdkDialog.cs" />
+    <Compile Include="TizenSdkInfo.cs" />
     <Compile Include="TizenExecutionCommand.cs" />
     <Compile Include="TizenExecutionHandler.cs" />
     <Compile Include="TizenUtility.cs" />

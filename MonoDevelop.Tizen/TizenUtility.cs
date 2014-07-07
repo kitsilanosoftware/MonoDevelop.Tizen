@@ -39,11 +39,13 @@ namespace MonoDevelop.Tizen
 	static class TizenUtility
 	{
 		//FIXME: needs better file list and handling of subdirectories
-		public static void Upload (TizenDevice targetDevice, TizenProjectConfiguration conf,
-						      string[] extraPaths,
-						      TextWriter outWriter, TextWriter errorWriter)
+		public static void Upload (TizenSdkInfo sdkInfo,
+					   TizenProjectConfiguration conf,
+					   string[] extraPaths,
+					   TextWriter outWriter,
+					   TextWriter errorWriter)
 		{
-			var sdb = new TizenSdkSdb (conf, targetDevice);
+			var sdb = new TizenSdkSdb (conf, sdkInfo);
 
 			var outDirFiles = Directory.GetFiles (conf.OutputDirectory, "*", SearchOption.TopDirectoryOnly);
 			var op = conf.OutputDirectory.ParentDirectory;
@@ -77,33 +79,6 @@ namespace MonoDevelop.Tizen
 				File.SetLastWriteTime (markerFile, DateTime.Now);
 			else
 				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
-		}
-	}
-	
-	public class TizenDevice
-	{
-		public TizenDevice (string id)
-		{
-			this.Id = id;
-		}
-
-		public string Id { get; set; }
-
-		static TizenDevice chosenDevice;
-
-		public static TizenDevice GetChosenDevice ()
-		{
-			if (chosenDevice == null) {
-				DispatchService.GuiSyncDispatch (delegate {
-					chosenDevice = TizenDevicePicker.GetDevice (null);
-				});
-			}
-			return chosenDevice;
-		}
-
-		public static void ResetChosenDevice ()
-		{
-			chosenDevice = null;
 		}
 	}
 }

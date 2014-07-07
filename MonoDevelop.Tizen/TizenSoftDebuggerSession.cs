@@ -60,11 +60,11 @@ namespace MonoDevelop.Tizen
 		
 		void StartProcess (TizenSoftDebuggerStartInfo dsi)
 		{
-			TizenUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null, null);
+			TizenUtility.Upload (dsi.SdkInfo, dsi.ExecutionCommand.Config, null, null, null);
 			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dra.Address, dra.DebugPort);
 			
-			process = TizenExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device,
+			process = TizenExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.SdkInfo,
 			                                               x => OnTargetOutput (false, x),
 			                                               x => OnTargetOutput (true, x));
 			
@@ -100,13 +100,16 @@ namespace MonoDevelop.Tizen
 	class TizenSoftDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public TizenExecutionCommand ExecutionCommand { get; private set; }
-		public TizenDevice Device { get; private set; }
+		public TizenSdkInfo SdkInfo { get; private set; }
 		
-		public TizenSoftDebuggerStartInfo (IPAddress address, int debugPort, TizenExecutionCommand cmd, TizenDevice device)
+		public TizenSoftDebuggerStartInfo (IPAddress address,
+						   int debugPort,
+						   TizenExecutionCommand cmd,
+						   TizenSdkInfo sdkInfo)
 			: base (new SoftDebuggerListenArgs (cmd.Name, address, debugPort))
 		{
 			ExecutionCommand = cmd;
-			Device = device;
+			SdkInfo = sdkInfo;
 		}
 	}
 }

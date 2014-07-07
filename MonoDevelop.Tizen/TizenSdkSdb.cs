@@ -25,16 +25,16 @@ namespace MonoDevelop.Tizen
 	public class TizenSdkSdb
 	{
 		public TizenSdkSdb (TizenProjectConfiguration config,
-				    TizenDevice device)
+				    TizenSdkInfo sdkInfo)
 		{
 			this.Config = config;
-			this.Device = device;
+			this.SdkInfo = sdkInfo;
 		}
 
 		public static readonly string DeviceHome = "/home/developer/";
 		public static readonly string DevicePathSeparator = "/";
 		public TizenProjectConfiguration Config { get; set; }
-		TizenDevice Device { get; set; }
+		TizenSdkInfo SdkInfo { get; set; }
 
 		private string GetSdbPath ()
 		{
@@ -55,7 +55,7 @@ namespace MonoDevelop.Tizen
 
 		private string CombineArguments (string[] args)
 		{
-			var id = Device.Id;
+			var id = SdkInfo.DeviceId;
 			var sb = new StringBuilder ();
 
 			if (!string.IsNullOrEmpty (id))

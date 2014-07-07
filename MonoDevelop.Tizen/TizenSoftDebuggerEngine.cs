@@ -46,7 +46,7 @@ namespace MonoDevelop.Tizen
 			var debuggerAddress = Dns.GetHostEntry (Dns.GetHostName ()).AddressList[0];
 			int debuggerPort = 10000;
 			
-			var dev = TizenDevice.GetChosenDevice ();
+			var dev = TizenSdkInfo.GetSdkInfo ();
 			var startInfo = new TizenSoftDebuggerStartInfo (debuggerAddress, debuggerPort, cmd, dev);
 			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
 			return startInfo;

@@ -49,16 +49,16 @@ namespace MonoDevelop.Tizen
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (TizenExecutionCommand) command;
-			var targetDevice = TizenDevice.GetChosenDevice ();
-			if (targetDevice == null) {
+			var sdkInfo = TizenSdkInfo.GetSdkInfo ();
+			if (sdkInfo == null) {
 				return new NullProcessAsyncOperation (false);
 			}
 			
 			//if (MeeGoUtility.NeedsUploading (cmd.Config)) {
-				TizenUtility.Upload (targetDevice, cmd.Config, null, console.Out, console.Error);
+				TizenUtility.Upload (sdkInfo, cmd.Config, null, console.Out, console.Error);
 			//}
 
-			var proc = CreateProcess (cmd, null, targetDevice, console.Out.Write, console.Error.Write);
+			var proc = CreateProcess (cmd, null, sdkInfo, console.Out.Write, console.Error.Write);
 			proc.Start ();
 			return proc;
 		}
@@ -66,12 +66,12 @@ namespace MonoDevelop.Tizen
 		public static SdbShellCommand CreateProcess (
 			TizenExecutionCommand cmd,
 			string sdbOptions,
-			TizenDevice device,
+			TizenSdkInfo sdkInfo,
 			Action<string> stdOut, Action<string> stdErr)
 		{
 			string exec = GetCommandString (cmd, sdbOptions);
 
-			var sdb = new TizenSdkSdb (cmd.Config, device);
+			var sdb = new TizenSdkSdb (cmd.Config, sdkInfo);
 
 			return new SdbShellCommand (sdb, exec, stdOut, stdErr);
 		}
