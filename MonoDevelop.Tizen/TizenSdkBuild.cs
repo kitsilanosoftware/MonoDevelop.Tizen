@@ -280,7 +280,7 @@ namespace MonoDevelop.Tizen
 			return InvokeNativeTool (new BuildReporter (monitor, res), "native-packaging", arguments);
 		}
 
-		private string GetNativeInstallArguments (string tpkPath)
+		private string GetPackageBasedArguments (string tpkPath)
 		{
 			var sb = new StringBuilder ();
 
@@ -293,9 +293,16 @@ namespace MonoDevelop.Tizen
 
 		public bool DoNativeInstall (string tpkPath, IConsole console)
 		{
-			var arguments = GetNativeInstallArguments (tpkPath);
+			var arguments = GetPackageBasedArguments (tpkPath);
 
 			return InvokeNativeTool (new BasicReporter (console.Out), "native-install", arguments);
+		}
+
+		public bool DoNativeRun (string tpkId, IConsole console)
+		{
+			var arguments = GetPackageBasedArguments (tpkId);
+
+			return InvokeNativeTool (new BasicReporter (console.Out), "native-run", arguments);
 		}
 	}
 }
