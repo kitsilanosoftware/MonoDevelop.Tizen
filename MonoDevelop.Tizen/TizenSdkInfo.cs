@@ -20,14 +20,16 @@ namespace MonoDevelop.Tizen
 {
 	public class TizenSdkInfo
 	{
-		public TizenSdkInfo (string sdkPath, string deviceId)
+		public TizenSdkInfo (string sdkPath, string monoRt, string deviceId)
 		{
 			this.SdkPath = sdkPath;
+			this.MonoRuntimePath = monoRt;
 			this.DeviceId = deviceId;
 		}
 
-		public string SdkPath  { get; set; }
-		public string DeviceId { get; set; }
+		public string SdkPath         { get; set; }
+		public string MonoRuntimePath { get; set; }
+		public string DeviceId        { get; set; }
 
 		static TizenSdkInfo sdkInfo;
 

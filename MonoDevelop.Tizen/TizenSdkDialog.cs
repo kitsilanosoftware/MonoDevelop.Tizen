@@ -30,12 +30,14 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using System.IO;
 
 namespace MonoDevelop.Tizen
 {
 	class TizenSdkDialog : Dialog
 	{
 		FolderEntry sdkFolderEntry;
+		FileEntry monoRtEntry;
 		Entry deviceEntry;
 		Button okButton, cancelButton;
 
@@ -45,18 +47,48 @@ namespace MonoDevelop.Tizen
 			Modal = true;
 			Build ();
 
-			sdkFolderEntry.Path = PropertyService.Get<string> ("TizenSdk.Folder") ?? "";
-			deviceEntry.Text = PropertyService.Get<string> ("TizenDevice.Id") ?? "";
+			sdkFolderEntry.Path = PropertyService.Get<string> ("MonoTizen.SdkFolder") ?? "";
+			monoRtEntry.Path = PropertyService.Get<string> ("MonoTizen.MonoRuntime") ?? "";
+			deviceEntry.Text = PropertyService.Get<string> ("MonoTizen.DeviceId") ?? "";
 
-			okButton.Sensitive = CheckSdb ();
-			sdkFolderEntry.PathChanged += delegate {
-				okButton.Sensitive = CheckSdb ();
-			};
+			okButton.Sensitive = CheckValues ();
+			sdkFolderEntry.PathChanged += OnPathChanged;
+			monoRtEntry.PathChanged += OnPathChanged;
+		}
+
+		private void OnPathChanged (object s, EventArgs a)
+		{
+			okButton.Sensitive = CheckValues ();
+		}
+
+		private bool CheckValues ()
+		{
+			return CheckSdb () && CheckMonoRt ();
 		}
 
 		private bool CheckSdb ()
 		{
-			return TizenSdkSdb.GetSdbPathFromSdkPath (sdkFolderEntry.Path) != null;
+			var path = sdkFolderEntry.Path;
+
+			return !string.IsNullOrEmpty (path) &&
+				TizenSdkSdb.GetSdbPathFromSdkPath (path) != null;
+		}
+
+		private bool CheckMonoRt ()
+		{
+			var path = monoRtEntry.Path;
+			if (string.IsNullOrEmpty (path) || !File.Exists (path))
+				return false;
+
+			var fileName = System.IO.Path.GetFileName (path);
+			if (!fileName.StartsWith ("mono-tizen", StringComparison.OrdinalIgnoreCase))
+				return false;
+
+			if (! (fileName.EndsWith (".armv7l.zip", StringComparison.OrdinalIgnoreCase) ||
+			       fileName.EndsWith (".i586.zip", StringComparison.OrdinalIgnoreCase)))
+				return false;
+
+			return true;
 		}
 
 		void Build ()
@@ -66,12 +98,19 @@ namespace MonoDevelop.Tizen
 
 			deviceEntry = new Entry () { ActivatesDefault = true };
 			sdkFolderEntry = new FolderEntry ();
+			monoRtEntry = new FileEntry ();
 
 			var sdkFolderLabel = new Label ("_SDK Installation Folder:") {
 				Xalign = 0,
 				Justify = Justification.Left,
 				UseUnderline = true,
 				MnemonicWidget = sdkFolderEntry
+			};
+			var monoRtLabel = new Label ("_Mono Runtime Bundle:") {
+				Xalign = 0,
+				Justify = Justification.Left,
+				UseUnderline = true,
+				MnemonicWidget = monoRtEntry
 			};
 			var deviceLabel = new Label ("_Device ID:") {
 				Xalign = 0,
@@ -87,10 +126,12 @@ namespace MonoDevelop.Tizen
 
 			table.Attach (sdkFolderLabel,   0, 1, 0, 1, expand, none, 2, 2);
 			table.Attach (sdkFolderEntry,   1, 2, 0, 1, fill,   none, 2, 2);
-			table.Attach (deviceLabel,      0, 1, 1, 2, expand, none, 2, 2);
-			table.Attach (deviceEntry,      1, 2, 1, 2, fill,   none, 2, 2);
+			table.Attach (monoRtLabel,      0, 1, 1, 2, expand, none, 2, 2);
+			table.Attach (monoRtEntry,      1, 2, 1, 2, fill,   none, 2, 2);
+			table.Attach (deviceLabel,      0, 1, 2, 3, expand, none, 2, 2);
+			table.Attach (deviceEntry,      1, 2, 2, 3, fill,   none, 2, 2);
 
-			VBox.PackStart (new Label ("Enter details for Tizen SDK usage:"), true, false, 6);
+			VBox.PackStart (new Label ("Tizen Project Setup:"), true, false, 6);
 			VBox.PackStart (table, true, false, 6);
 
 			cancelButton = new Button (Gtk.Stock.Cancel);
@@ -108,12 +149,14 @@ namespace MonoDevelop.Tizen
 		TizenSdkInfo GetSdkInfo ()
 		{
 			var sdkFolder = sdkFolderEntry.Path;
+			var monoRt = monoRtEntry.Path;
 			var deviceId = deviceEntry.Text;
 
-			PropertyService.Set ("TizenSdk.Folder", sdkFolder);
-			PropertyService.Set ("TizenDevice.Id", deviceId);
+			PropertyService.Set ("MonoTizen.SdkFolder", sdkFolder);
+			PropertyService.Set ("MonoTizen.MonoRuntime", monoRt);
+			PropertyService.Set ("MonoTizen.DeviceId", deviceId);
 
-			return new TizenSdkInfo (sdkFolder, deviceId);
+			return new TizenSdkInfo (sdkFolder, monoRt, deviceId);
 		}
 
 		public override void Dispose ()

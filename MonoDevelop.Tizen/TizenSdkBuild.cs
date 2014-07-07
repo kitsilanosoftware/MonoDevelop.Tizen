@@ -82,8 +82,7 @@ namespace MonoDevelop.Tizen
 			if (Directory.Exists (incMonoDir))
 				return true;
 
-			var zip = "/tmp/mono-tizen-3.6.0-0.i586.zip";
-			var zis = new ZipInputStream (File.OpenRead (zip));
+			var zis = new ZipInputStream (File.OpenRead (SdkInfo.MonoRuntimePath));
 			var buffer = new byte[4096];
 			for (var ze = zis.GetNextEntry (); ze != null; ze = zis.GetNextEntry ()) {
 				var target = Path.Combine (baseDir, ze.Name);
