@@ -58,11 +58,7 @@ namespace MonoDevelop.Tizen
 
 		private string Escape (string arg)
 		{
-			// FIXME: What's the right kind of escaping,
-			// as we want to be maximally cross-platform?
-			// We'll chicken out for now, because we're
-			// under a deadline.
-			return '"' + arg + '"';
+			return TizenUtility.EscapeProcessArgument (arg);
 		}
 
 		private string CombineArguments (string[] args)

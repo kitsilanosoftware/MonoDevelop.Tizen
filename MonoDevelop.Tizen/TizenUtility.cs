@@ -80,6 +80,13 @@ namespace MonoDevelop.Tizen
 			else
 				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
 		}
+
+		public static string EscapeProcessArgument (string arg)
+		{
+			// FIXME: What's the right kind of escaping, as we want to be maximally
+			// cross-platform?  We'll chicken out for now, because we're under a
+			// deadline.
+			return '"' + arg + '"';
+		}
 	}
 }
-
