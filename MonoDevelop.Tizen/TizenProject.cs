@@ -76,7 +76,8 @@ namespace MonoDevelop.Tizen
 
 			// Phase 2: Tizen SDK wrapping, linking, and packaging.
 			var config = (TizenProjectConfiguration) GetConfiguration (configuration);
-			TizenSdkBuild.DoBuild (monitor, config, res);
+			var sdkBuild = new TizenSdkBuild (config);
+			sdkBuild.DoNativeBuild (monitor, res);
 
 			return res;
 		}

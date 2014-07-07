@@ -27,18 +27,24 @@ namespace MonoDevelop.Tizen
 {
 	public class TizenSdkBuild
 	{
-		public static bool DoBuild (IProgressMonitor monitor,
-					    TizenProjectConfiguration config,
-					    BuildResult res)
+		public TizenSdkBuild (TizenProjectConfiguration config)
 		{
-			if (!EnsureMonoRuntime (monitor, config, res))
+			this.Config = config;
+		}
+
+		public TizenProjectConfiguration Config { get; set; }
+
+		public bool DoNativeBuild (IProgressMonitor monitor,
+					   BuildResult res)
+		{
+			if (!EnsureMonoRuntime (monitor, res))
 				return false;
 
-			var unversionedSo = CreateUnversionedSo (monitor, config, res);
+			var unversionedSo = CreateUnversionedSo (monitor, res);
 			if (unversionedSo == null)
 				return false;
 
-			if (!DoNativeMake (monitor, config, res))
+			if (!DoNativeMake (monitor, res))
 				return false;
 
 			File.Delete (unversionedSo);
@@ -46,26 +52,31 @@ namespace MonoDevelop.Tizen
 			return true;
 		}
 
-		private static string GetBuildDir (TizenProjectConfiguration config)
+		private Project GetProject ()
 		{
-			var project = config.ParentItem as Project;
+			return Config.ParentItem as Project;
+		}
+
+		private string GetProjectSubdir (string subdir)
+		{
+			var project = GetProject ();
 			if (project == null)
 				return null;
 
-			return Path.Combine (project.BaseDirectory, "CommandLineBuild");
+			return Path.Combine (project.BaseDirectory, subdir);
 		}
 
-		private static bool EnsureMonoRuntime (IProgressMonitor monitor,
-						       TizenProjectConfiguration config,
-						       BuildResult res)
+		private bool EnsureMonoRuntime (IProgressMonitor monitor,
+						BuildResult res)
 		{
-			var project = config.ParentItem as Project;
+			var project = GetProject ();
 			if (project == null)
 				return false;
 
 			var baseDir = project.BaseDirectory;
-			var incMono = Path.Combine (baseDir, "inc", "mono");
-			if (Directory.Exists (incMono))
+			var incDir = Path.Combine (baseDir, "mono");
+			var incMonoDir = Path.Combine (incDir, "mono");
+			if (Directory.Exists (incMonoDir))
 				return true;
 
 			var zip = "/tmp/mono-tizen-3.6.0-0.i586.zip";
@@ -92,23 +103,17 @@ namespace MonoDevelop.Tizen
 			return true;
 		}
 
-		private static string CreateUnversionedSo (IProgressMonitor monitor,
-							   TizenProjectConfiguration config,
-							   BuildResult res)
+		private string CreateUnversionedSo (IProgressMonitor monitor,
+						    BuildResult res)
 		{
-			var project = config.ParentItem as Project;
-			if (project == null)
-				return null;
-
-			var baseDir = project.BaseDirectory;
-			var lib = Path.Combine (baseDir, "lib");
-			if (!Directory.Exists (lib)) {
-				res.AddError (string.Format ("'{0}' is not a directory.", lib));
+			var libDir = GetProjectSubdir ("lib");
+			if (!Directory.Exists (libDir)) {
+				res.AddError (string.Format ("'{0}' is not a directory.", libDir));
 				return null;
 			}
 
-			var libNameAt = lib.Length + 1;
-			foreach (var de in Directory.EnumerateFiles (lib, "libmono*.so.*")) {
+			var libNameAt = libDir.Length + 1;
+			foreach (var de in Directory.EnumerateFiles (libDir, "libmono*.so.*")) {
 				var extAt = de.LastIndexOf (".so.");
 				if (extAt > libNameAt) {
 					var unversionedSo = de.Substring (0, extAt) + ".so";
@@ -123,11 +128,10 @@ namespace MonoDevelop.Tizen
 			return null;
 		}
 
-		private static bool DoNativeMake (IProgressMonitor monitor,
-						  TizenProjectConfiguration config,
-						  BuildResult res)
+		private bool DoNativeMake (IProgressMonitor monitor,
+					   BuildResult res)
 		{
-			var buildDir = GetBuildDir (config);
+			var buildDir = GetProjectSubdir ("CommandLineBuild");
 			if (!Directory.Exists (buildDir)) {
 				res.AddError (string.Format ("'{0}' is not a directory.", buildDir));
 				return false;
