@@ -89,11 +89,7 @@ namespace MonoDevelop.Tizen
 			if (!fileName.StartsWith ("mono-tizen", StringComparison.OrdinalIgnoreCase))
 				return false;
 
-			if (! (fileName.EndsWith (".armv7l.zip", StringComparison.OrdinalIgnoreCase) ||
-			       fileName.EndsWith (".i586.zip", StringComparison.OrdinalIgnoreCase)))
-				return false;
-
-			return true;
+			return TizenSdkBuild.GetArchForRuntimeBundle (fileName) != null;
 		}
 
 		private bool CheckAuthorKey ()

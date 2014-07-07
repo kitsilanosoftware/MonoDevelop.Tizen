@@ -38,22 +38,33 @@ namespace MonoDevelop.Tizen
 		public TizenProjectConfiguration Config { get; set; }
 		TizenSdkInfo SdkInfo { get; set; }
 
+		public static string GetArchForRuntimeBundle (rtPath)
+		{
+			if (fileName.EndsWith (".armv7l.zip", StringComparison.OrdinalIgnoreCase))
+				return "armel";
+			else if (fileName.EndsWith (".i586.zip", StringComparison.OrdinalIgnoreCase))
+				return "i386";
+			else
+				return null;
+		}
+
 		public bool DoNativeBuild (IProgressMonitor monitor,
 					   BuildResult res)
 		{
-			if (!EnsureMonoRuntime (monitor, res))
+			var arch = EnsureMonoRuntime (monitor, res);
+			if (arch == null)
 				return false;
 
 			var unversionedSo = CreateUnversionedSo (monitor, res);
 			if (unversionedSo == null)
 				return false;
 
-			if (!DoNativeMake (monitor, res))
+			if (!DoNativeMake (monitor, res, arch))
 				return false;
 
 			File.Delete (unversionedSo);
 
-			if (!DoNativePackaging (monitor, res))
+			if (!DoNativePackaging (monitor, res, arch))
 				return false;
 
 			return true;
@@ -78,9 +89,13 @@ namespace MonoDevelop.Tizen
 		{
 			var project = GetProject ();
 			if (project == null)
-				return false;
+				return null;
 
 			var rtPath = SdkInfo.MonoRuntimePath;
+			var arch = GetArchForRuntimeBundle (rtPath);
+			if (arch == null)
+				return null;
+
 			monitor.BeginTask (string.Format ("Unpacking Mono runtime {0}...", rtPath), 1);
 
 			var zis = new ZipInputStream (File.OpenRead (rtPath));
@@ -106,7 +121,7 @@ namespace MonoDevelop.Tizen
 
 			monitor.EndTask ();
 
-			return true;
+			return arch;
 		}
 
 		private string CreateUnversionedSo (IProgressMonitor monitor,
@@ -244,6 +259,7 @@ namespace MonoDevelop.Tizen
 			psi.RedirectStandardError = true;
 
 			reporter.BeginTask (string.Format ("Invoking {0}...", tool));
+			reporter.WriteLine ("Command: " + psi.FileName + " " + arguments);
 			p.Start ();
 
 			TizenUtility.Copier.Start (p.StandardOutput, reporter.WriteLine);
@@ -261,9 +277,11 @@ namespace MonoDevelop.Tizen
 		}
 
 		private bool DoNativeMake (IProgressMonitor monitor,
-					   BuildResult res)
+					   BuildResult res,
+					   string arch)
 		{
-			return InvokeNativeTool (new BuildReporter (monitor, res), "native-make", "");
+			return InvokeNativeTool (new BuildReporter (monitor, res), "native-make",
+						 "--arch " + arch);
 		}
 
 		private string Escape (string arg)
@@ -271,10 +289,11 @@ namespace MonoDevelop.Tizen
 			return TizenUtility.EscapeProcessArgument (arg);
 		}
 
-		private string GetNativePackagingArguments ()
+		private string GetNativePackagingArguments (string arch)
 		{
 			var sb = new StringBuilder ();
 
+			sb.AppendFormat ("--arch {0}", arch)
 			sb.AppendFormat ("-ak {0} ", Escape (SdkInfo.AuthorKey));
 			// Tizen passwords are not sensitive, are they?
 			sb.AppendFormat ("-ap {0} ", Escape (SdkInfo.AuthorKeyPassword));
@@ -283,9 +302,10 @@ namespace MonoDevelop.Tizen
 		}
 
 		private bool DoNativePackaging (IProgressMonitor monitor,
-						BuildResult res)
+						BuildResult res,
+						string arch)
 		{
-			var arguments = GetNativePackagingArguments ();
+			var arguments = GetNativePackagingArguments (arch);
 
 			return InvokeNativeTool (new BuildReporter (monitor, res), "native-packaging", arguments);
 		}
