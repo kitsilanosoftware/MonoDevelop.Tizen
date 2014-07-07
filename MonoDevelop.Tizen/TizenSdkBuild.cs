@@ -80,18 +80,11 @@ namespace MonoDevelop.Tizen
 			if (project == null)
 				return false;
 
-			var baseDir = project.BaseDirectory;
-			var incDir = Path.Combine (baseDir, "mono");
-			var incMonoDir = Path.Combine (incDir, "mono");
-			if (Directory.Exists (incMonoDir)) {
-				monitor.Log.WriteLine ("{0} exists; skipping Mono runtime setup.", incMonoDir);
-				return true;
-			}
-
 			var rtPath = SdkInfo.MonoRuntimePath;
 			monitor.BeginTask (string.Format ("Unpacking Mono runtime {0}...", rtPath), 1);
 
 			var zis = new ZipInputStream (File.OpenRead (rtPath));
+			var baseDir = project.BaseDirectory;
 			var buffer = new byte[4096];
 			for (var ze = zis.GetNextEntry (); ze != null; ze = zis.GetNextEntry ()) {
 				var target = Path.Combine (baseDir, ze.Name);
