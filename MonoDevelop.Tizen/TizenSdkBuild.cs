@@ -21,27 +21,78 @@ using System.Diagnostics;
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace MonoDevelop.Tizen
 {
 	public class TizenSdkBuild
 	{
-		public static void DoBuild (IProgressMonitor monitor,
+		public static bool DoBuild (IProgressMonitor monitor,
 					    TizenProjectConfiguration config,
 					    BuildResult res)
 		{
-			DoNativeMake (monitor, config, res);
+			if (!EnsureMonoRuntime (monitor, config, res))
+				return false;
+
+			if (!DoNativeMake (monitor, config, res))
+				return false;
+
+			return true;
 		}
 
-		public static bool DoNativeMake (IProgressMonitor monitor,
-						 TizenProjectConfiguration config,
-						 BuildResult res)
+		private static string GetBuildDir (TizenProjectConfiguration config)
 		{
-			var dnp = config.ParentItem as Project;
-			var clb = dnp.BaseDirectory.Combine ("CommandLineBuild");
-				 
-			if (!Directory.Exists (clb)) {
-				res.AddError (string.Format ("'{0}' is not a directory.", clb));
+			var project = config.ParentItem as Project;
+			if (project == null)
+				return null;
+
+			return Path.Combine (project.BaseDirectory, "CommandLineBuild");
+		}
+
+		private static bool EnsureMonoRuntime (IProgressMonitor monitor,
+						       TizenProjectConfiguration config,
+						       BuildResult res)
+		{
+			var project = config.ParentItem as Project;
+			if (project == null)
+				return false;
+
+			var baseDir = project.BaseDirectory;
+			var incMono = Path.Combine (baseDir, "inc", "mono");
+			if (Directory.Exists (incMono))
+				return true;
+
+			var zip = "/tmp/mono-tizen-3.6.0-0.i586.zip";
+			var zis = new ZipInputStream (File.OpenRead (zip));
+			var buffer = new byte[4096];
+			for (var ze = zis.GetNextEntry (); ze != null; ze = zis.GetNextEntry ()) {
+				var target = Path.Combine (baseDir, ze.Name);
+				if (ze.IsDirectory) {
+					if (!Directory.Exists (target)) {
+						Directory.CreateDirectory (target);
+					}
+				} else if (ze.IsFile) {
+					using (var f = File.Create (target)) {
+						while (true) {
+							var n = zis.Read (buffer, 0, buffer.Length);
+							if (n <= 0)
+								break;
+							f.Write (buffer, 0, n);
+						}
+					}
+				}
+			}
+
+			return true;
+		}
+
+		private static bool DoNativeMake (IProgressMonitor monitor,
+						  TizenProjectConfiguration config,
+						  BuildResult res)
+		{
+			var buildDir = GetBuildDir (config);
+			if (!Directory.Exists (buildDir)) {
+				res.AddError (string.Format ("'{0}' is not a directory.", buildDir));
 				return false;
 			}
 
@@ -50,7 +101,7 @@ namespace MonoDevelop.Tizen
 
 			psi.UseShellExecute = false;
 			psi.FileName = "native-make";
-			psi.WorkingDirectory = pfp.ToString ();
+			psi.WorkingDirectory = buildDir;
 
 			p.Start ();
 			p.WaitForExit ();

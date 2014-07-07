@@ -1,3 +1,4 @@
 .DS_Store
 /MonoDevelop.Tizen.userprefs
 /MonoDevelop.Tizen/bin/
+/packages/SharpZipLib.*/
