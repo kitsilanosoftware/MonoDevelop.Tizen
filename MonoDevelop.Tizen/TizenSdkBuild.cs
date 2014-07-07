@@ -139,37 +139,56 @@ namespace MonoDevelop.Tizen
 			return null;
 		}
 
-		private bool DoNativeMake (IProgressMonitor monitor,
-					   BuildResult res)
+		private string GetNativeBuildDir (BuildResult res)
 		{
 			var buildDir = GetProjectSubdir ("CommandLineBuild");
 			if (!Directory.Exists (buildDir)) {
 				res.AddError (string.Format ("'{0}' is not a directory.", buildDir));
-				return false;
+				return null;
 			}
+			return buildDir;
+		}
 
-			var nativeMakePath = Path.Combine (
-				new string[] { SdkInfo.SdkPath, "tools", "ide", "bin", "native-make" });
+		private string GetNativeTool (string tool)
+		{
+			return Path.Combine (
+				new string[] { SdkInfo.SdkPath, "tools", "ide", "bin", tool });
+		}
 
-			monitor.BeginTask ("Invoking native-make...", 1);
+		private bool InvokeNativeTool (IProgressMonitor monitor,
+					       BuildResult res,
+					       string tool,
+					       string arguments)
+		{
+			var buildDir = GetNativeBuildDir (res);
+			if (buildDir == null)
+				return false;
 
 			var p = new Process ();
 			var psi = p.StartInfo;
 
 			psi.UseShellExecute = false;
-			psi.FileName = nativeMakePath;
+			psi.FileName = GetNativeTool (tool);
 			psi.WorkingDirectory = buildDir;
+			psi.Arguments = arguments;
 
+			monitor.BeginTask (string.Format ("Invoking {0}...", tool), 1);
 			p.Start ();
 			p.WaitForExit ();
 			monitor.EndTask ();
 
 			if (p.ExitCode != 0) {
-				res.AddError (string.Format ("native-make failed with code '{0}'", p.ExitCode));
+				res.AddError (string.Format ("{0} failed with code '{1}'", tool, p.ExitCode));
 				return false;
 			}
 
 			return true;
+		}
+
+		private bool DoNativeMake (IProgressMonitor monitor,
+					   BuildResult res)
+		{
+			return InvokeNativeTool (monitor, res, "native-make", "");
 		}
 	}
 }
