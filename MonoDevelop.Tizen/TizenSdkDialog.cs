@@ -38,6 +38,8 @@ namespace MonoDevelop.Tizen
 	{
 		FolderEntry sdkFolderEntry;
 		FileEntry monoRtEntry;
+		FileEntry authorKeyEntry;
+		Entry authorPassEntry;
 		Entry deviceEntry;
 		Button okButton, cancelButton;
 
@@ -49,21 +51,24 @@ namespace MonoDevelop.Tizen
 
 			sdkFolderEntry.Path = PropertyService.Get<string> ("MonoTizen.SdkFolder") ?? "";
 			monoRtEntry.Path = PropertyService.Get<string> ("MonoTizen.MonoRuntime") ?? "";
+			authorKeyEntry.Path = PropertyService.Get<string> ("MonoTizen.AuthorKey") ?? "";
 			deviceEntry.Text = PropertyService.Get<string> ("MonoTizen.DeviceId") ?? "";
 
 			okButton.Sensitive = CheckValues ();
-			sdkFolderEntry.PathChanged += OnPathChanged;
-			monoRtEntry.PathChanged += OnPathChanged;
+			sdkFolderEntry.PathChanged += OnChanged;
+			monoRtEntry.PathChanged += OnChanged;
+			authorKeyEntry.PathChanged += OnChanged;
+			authorPassEntry.Changed += OnChanged;
 		}
 
-		private void OnPathChanged (object s, EventArgs a)
+		private void OnChanged (object s, EventArgs a)
 		{
 			okButton.Sensitive = CheckValues ();
 		}
 
 		private bool CheckValues ()
 		{
-			return CheckSdb () && CheckMonoRt ();
+			return CheckSdb () && CheckMonoRt () && CheckAuthorKey () && CheckAuthorPass ();
 		}
 
 		private bool CheckSdb ()
@@ -91,6 +96,20 @@ namespace MonoDevelop.Tizen
 			return true;
 		}
 
+		private bool CheckAuthorKey ()
+		{
+			var path = authorKeyEntry.Path;
+			if (string.IsNullOrEmpty (path) || !File.Exists (path))
+				return false;
+
+			return true;
+		}
+
+		private bool CheckAuthorPass ()
+		{
+			return !string.IsNullOrEmpty (authorPassEntry.Text);
+		}
+
 		void Build ()
 		{
 			Title = "Tizen SDK Info";
@@ -99,6 +118,8 @@ namespace MonoDevelop.Tizen
 			deviceEntry = new Entry () { ActivatesDefault = true };
 			sdkFolderEntry = new FolderEntry ();
 			monoRtEntry = new FileEntry ();
+			authorKeyEntry = new FileEntry ();
+			authorPassEntry = new Entry () { Visibility = false, ActivatesDefault = true };
 
 			var sdkFolderLabel = new Label ("_SDK Installation Folder:") {
 				Xalign = 0,
@@ -112,6 +133,18 @@ namespace MonoDevelop.Tizen
 				UseUnderline = true,
 				MnemonicWidget = monoRtEntry
 			};
+			var authorKeyLabel = new Label ("_Author Key:") {
+				Xalign = 0,
+				Justify = Justification.Left,
+				UseUnderline = true,
+				MnemonicWidget = authorKeyEntry
+			};
+			var authorPassLabel = new Label ("_Author Key Password:") {
+				Xalign = 0,
+				Justify = Justification.Left,
+				UseUnderline = true,
+				MnemonicWidget = authorPassEntry
+			};
 			var deviceLabel = new Label ("_Device ID:") {
 				Xalign = 0,
 				Justify = Justification.Left,
@@ -119,7 +152,7 @@ namespace MonoDevelop.Tizen
 				MnemonicWidget = deviceEntry
 			};
 
-			var table = new Table (2, 1, false);
+			var table = new Table (2, 5, false);
 			var fill = AttachOptions.Expand | AttachOptions.Fill;
 			var none = AttachOptions.Shrink;
 			var expand = AttachOptions.Expand;
@@ -128,8 +161,12 @@ namespace MonoDevelop.Tizen
 			table.Attach (sdkFolderEntry,   1, 2, 0, 1, fill,   none, 2, 2);
 			table.Attach (monoRtLabel,      0, 1, 1, 2, expand, none, 2, 2);
 			table.Attach (monoRtEntry,      1, 2, 1, 2, fill,   none, 2, 2);
-			table.Attach (deviceLabel,      0, 1, 2, 3, expand, none, 2, 2);
-			table.Attach (deviceEntry,      1, 2, 2, 3, fill,   none, 2, 2);
+			table.Attach (authorKeyLabel,   0, 1, 2, 3, expand, none, 2, 2);
+			table.Attach (authorKeyEntry,   1, 2, 2, 3, fill,   none, 2, 2);
+			table.Attach (authorPassLabel,  0, 1, 3, 4, expand, none, 2, 2);
+			table.Attach (authorPassEntry,  1, 2, 3, 4, fill,   none, 2, 2);
+			table.Attach (deviceLabel,      0, 1, 4, 5, expand, none, 2, 2);
+			table.Attach (deviceEntry,      1, 2, 4, 5, fill,   none, 2, 2);
 
 			VBox.PackStart (new Label ("Tizen Project Setup:"), true, false, 6);
 			VBox.PackStart (table, true, false, 6);
@@ -150,13 +187,15 @@ namespace MonoDevelop.Tizen
 		{
 			var sdkFolder = sdkFolderEntry.Path;
 			var monoRt = monoRtEntry.Path;
+			var authorKey = authorKeyEntry.Path;
 			var deviceId = deviceEntry.Text;
 
 			PropertyService.Set ("MonoTizen.SdkFolder", sdkFolder);
 			PropertyService.Set ("MonoTizen.MonoRuntime", monoRt);
+			PropertyService.Set ("MonoTizen.AuthorKey", authorKey);
 			PropertyService.Set ("MonoTizen.DeviceId", deviceId);
 
-			return new TizenSdkInfo (sdkFolder, monoRt, deviceId);
+			return new TizenSdkInfo (sdkFolder, monoRt, authorKey, authorPassEntry.Text, deviceId);
 		}
 
 		public override void Dispose ()
