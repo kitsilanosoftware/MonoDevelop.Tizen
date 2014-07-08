@@ -7,12 +7,20 @@
        description="Support for developing and deploying Mono/Tizen applications"
        category="Mobile Development"
        version="1.0">
+
   <Dependencies>
     <Addin id="::MonoDevelop.Core" version="5.0" />
     <Addin id="::MonoDevelop.Ide" version="5.0" />
     <Addin id="::MonoDevelop.Debugger" version="5.0"/>
     <Addin id="::MonoDevelop.Debugger.Soft" version="5.0"/>
   </Dependencies>
+
+  <Runtime>
+    <Import assembly="ICSharpCode.SharpZipLib.dll"/>
+    <Import assembly="MonoDevelop.Tizen.dll"/>
+    <Import file="Templates/TizenNativeProject.xpt.xml"/>
+    <Import file="Templates/mainmenu.png"/>
+  </Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "NoBomFile" class = "MonoDevelop.Tizen.NoBomFileDescriptionTemplate"/>
