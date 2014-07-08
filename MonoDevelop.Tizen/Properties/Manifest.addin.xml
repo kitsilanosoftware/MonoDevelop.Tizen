@@ -6,7 +6,7 @@
        copyright="GPL"
        description="Support for developing and deploying Mono/Tizen applications"
        category="Mobile Development"
-       version="1.0">
+       version="1.0.0">
 
   <Dependencies>
     <Addin id="::MonoDevelop.Core" version="5.0" />

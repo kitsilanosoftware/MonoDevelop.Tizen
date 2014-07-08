@@ -5,7 +5,7 @@ using Mono.Addins.Description;
 [assembly:Addin (
 	"MonoDevelop.Tizen", 
 	Namespace = "MonoDevelop.Tizen",
-	Version = "1.0"
+	Version = "1.0.0"
 )]
 
 [assembly:AddinName ("MonoDevelop.Tizen")]
