@@ -313,7 +313,7 @@ all: ${ProjectName}.exe secondary-outputs
 ${ProjectName}.exe: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C++ Linker'
-	$(CC) -o"${ProjectName}.exe" $(OBJS) $(USER_OBJS) $(LIBS) $(TC_LINKER_MISC) $(RS_LINKER_MISC) -pie -lpthread  -Xlinker -rpath="/opt/usr/apps/$(APPID)/lib" -L"$(PROJPATH)/lib" -lmonoboehm-2.0 -Xlinker -rpath="/home/developer/sdk_tools/lib" --sysroot=$(ROOTSTRAP) -L$(ROOTSTRAP)/usr/lib -L$(ROOTSTRAP)/usr/lib/osp -losp-uifw -losp-appfw -losp-image -losp-json -losp-ime -losp-net -lpthread -losp-content -losp-locations -losp-telephony -losp-uix -losp-media -losp-messaging -losp-web -losp-social -losp-wifi -losp-bluetooth -losp-nfc -losp-face -losp-secure-element -losp-speech-tts -losp-speech-stt -losp-shell -losp-shell-core -losp-vision -lxml2 -lalut -lopenal 
+	$(CC) -o"${ProjectName}.exe" $(OBJS) $(USER_OBJS) $(LIBS) $(TC_LINKER_MISC) $(RS_LINKER_MISC) -rdynamic -pie -lpthread  -Xlinker -rpath="/opt/usr/apps/$(APPID)/lib" -L"$(PROJPATH)/lib" -lmonoboehm-2.0 -Xlinker -rpath="/home/developer/sdk_tools/lib" --sysroot=$(ROOTSTRAP) -L$(ROOTSTRAP)/usr/lib -L$(ROOTSTRAP)/usr/lib/osp -losp-uifw -losp-appfw -losp-image -losp-json -losp-ime -losp-net -lpthread -losp-content -losp-locations -losp-telephony -losp-uix -losp-media -losp-messaging -losp-web -losp-social -losp-wifi -losp-bluetooth -losp-nfc -losp-face -losp-secure-element -losp-speech-tts -losp-speech-stt -losp-shell -losp-shell-core -losp-vision -lxml2 -lalut -lopenal 
 	@echo 'Finished building target: $@'
 	@echo ' '
 
