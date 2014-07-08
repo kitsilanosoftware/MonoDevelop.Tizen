@@ -90,6 +90,7 @@
     <Compile Include="TizenSdkSdb.cs" />
     <Compile Include="NoBomFileDescriptionTemplate.cs" />
     <Compile Include="TizenSdkBuild.cs" />
+    <Compile Include="TizenCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

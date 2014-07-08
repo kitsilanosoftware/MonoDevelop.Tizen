@@ -22,6 +22,17 @@
     <Import file="Templates/mainmenu.png"/>
   </Runtime>
 
+  <Extension path = "/MonoDevelop/Ide/Commands">
+    <Command id = "MonoDevelop.Tizen.TizenCommands.SdkSettings"
+	     defaultHandler = "MonoDevelop.Tizen.TizenSdkSettingsHandler"
+	     _label = "Tizen SDK Settings..." />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+    <CommandItem id="MonoDevelop.Tizen.TizenCommands.SdkSettings"
+		 insertbefore="OptionsSeparator"/>
+  </Extension>
+
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "NoBomFile" class = "MonoDevelop.Tizen.NoBomFileDescriptionTemplate"/>
 	</Extension>

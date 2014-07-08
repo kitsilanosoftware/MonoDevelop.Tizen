@@ -39,7 +39,12 @@ namespace MonoDevelop.Tizen
 
 		public static TizenSdkInfo GetSdkInfo ()
 		{
-			if (sdkInfo == null) {
+			return EnsureSdkInfo (false);
+		}
+
+		public static TizenSdkInfo EnsureSdkInfo (bool forceDialog)
+		{
+			if (sdkInfo == null || forceDialog) {
 				DispatchService.GuiSyncDispatch (delegate {
 					sdkInfo = TizenSdkDialog.GetSdkInfo (null);
 				});
