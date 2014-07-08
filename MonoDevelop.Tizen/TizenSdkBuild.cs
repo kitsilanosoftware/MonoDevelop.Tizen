@@ -38,11 +38,11 @@ namespace MonoDevelop.Tizen
 		public TizenProjectConfiguration Config { get; set; }
 		TizenSdkInfo SdkInfo { get; set; }
 
-		public static string GetArchForRuntimeBundle (rtPath)
+		public static string GetArchForRuntimeBundle (string rtPath)
 		{
-			if (fileName.EndsWith (".armv7l.zip", StringComparison.OrdinalIgnoreCase))
+			if (rtPath.EndsWith (".armv7l.zip", StringComparison.OrdinalIgnoreCase))
 				return "armel";
-			else if (fileName.EndsWith (".i586.zip", StringComparison.OrdinalIgnoreCase))
+			else if (rtPath.EndsWith (".i586.zip", StringComparison.OrdinalIgnoreCase))
 				return "i386";
 			else
 				return null;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Tizen
 			return Path.Combine (project.BaseDirectory, subdir);
 		}
 
-		private bool EnsureMonoRuntime (IProgressMonitor monitor,
+		private string EnsureMonoRuntime (IProgressMonitor monitor,
 						BuildResult res)
 		{
 			var project = GetProject ();
@@ -293,7 +293,7 @@ namespace MonoDevelop.Tizen
 		{
 			var sb = new StringBuilder ();
 
-			sb.AppendFormat ("--arch {0}", arch)
+			sb.AppendFormat ("--arch {0} ", arch);
 			sb.AppendFormat ("-ak {0} ", Escape (SdkInfo.AuthorKey));
 			// Tizen passwords are not sensitive, are they?
 			sb.AppendFormat ("-ap {0} ", Escape (SdkInfo.AuthorKeyPassword));
