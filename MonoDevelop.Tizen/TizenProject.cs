@@ -73,6 +73,8 @@ namespace MonoDevelop.Tizen
 		{
 			// Phase 1: Perform normal .NET project build.
 			var res = base.DoBuild (monitor, configuration);
+			if (res.ErrorCount > 0)
+				return res;
 
 			// Phase 2: Tizen SDK wrapping, linking, and packaging.
 			var config = (TizenProjectConfiguration) GetConfiguration (configuration);
