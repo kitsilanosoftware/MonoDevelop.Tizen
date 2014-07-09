@@ -36,17 +36,46 @@
 
 <img src="https://monotizen.files.wordpress.com/2014/07/256t.png"/>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="licensing" class="anchor" href="#licensing"><span class="octicon octicon-link"></span></a>Licensing</h3>
+
+<p>
+IMPORTANT - If your application is not LGPLv2-compliant then you will need to purchase a <http://xamarin.com/licensing>commercial license
+from Xamarin</a> before you can legally publish your application.
+</p>
+
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage/h3>
+
+Create a new solution of type C# → Tizen → Tizen Native Project.
+Before the first build, the Tizen add-in will prompt you for the
+following:
+
+  * **SDK Installation Folder** (mandatory): The root of your Tizen
+    SDK installation, the SDB tool should be located at `tools/sdb` or
+    `tools/sdb.exe` relative to the chosen value;
+
+  * **Mono Runtime Bundle** (mandatory): The path to a ZIP
+    re-packaging of the MonoTizen RPMs.  You can download ready-to-use
+    bundles here:
+
+    <http://phio.crosstwine.com/kitsilano/mono-tizen/tarballs/add-in/runtime/>
+
+    or build your own from RPMs using the `Makefile` in:
+
+    <https://github.com/kitsilanosoftware/MonoTizen.BuildScripts/>
+
+  * **Author Key** (mandatory): The `*.p12` key to use for generating
+    native (`*.tpk`) packages;
+
+  * **Author Key Password** (mandatory): Password of the `*.p12` key;
+
+  * **Device ID** (optional): The ID of the target device, as provided
+    by `sdb devices`; if left empty, the native tools will use the
+    default device.
+
+This dialog box can also be accessed via the Project → Tizen SDK
+Settings... menu.
+
 
 <p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
 
