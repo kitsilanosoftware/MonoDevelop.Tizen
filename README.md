@@ -1,12 +1,11 @@
 # MonoDevelop.Tizen
 
-Support for developing and deploying Mono/Tizen applications in MonoDevelop
+Support for developing and deploying LGPLv2-compliant applications
+using Mono for Tizen from within MonoDevelop.
 
-This is a fork of the now obsolete MonoDevelop.MeeGo add-in which used
-to live in the main MonoDevelop repository; cf. this pull request for
-details:
-
-<https://github.com/mono/monodevelop/pull/610>
+If your application is not LGPLv2-compliant then you will need to
+purchase a commercial license from Xamarin. See
+<http://xamarin.com/licensing>.
 
 ## Usage
 
@@ -36,3 +35,6 @@ following:
   * **Device ID** (optional): The ID of the target device, as provided
     by `sdb devices`; if left empty, the native tools will use the
     default device.
+
+This dialog box can also be accessed via the Project → Tizen SDK
+Settings... menu.

@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle ("MonoDevelop.Tizen")]
-[assembly: AssemblyDescription ("")]
+[assembly: AssemblyTitle ("Tizen support")]
+[assembly: AssemblyDescription ("Support for developing and deploying LGPLv2-compliant applications using Mono for Tizen. If your application is not LGPLv2-compliant then you will need to purchase a commercial license from Xamarin. See http://xamarin.com/licensing.")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("Kitsilano Software Inc.")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("Kitsilano Software Inc.")]
+[assembly: AssemblyCopyright ("Copyright (c) 2014 Kitsilano Software Inc.")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 

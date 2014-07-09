@@ -1,10 +1,12 @@
 // 
 // TizenExecutionHandler.cs
 //  
-// Author:
+// Authors:
 //       Michael Hutchinson <mhutchinson@novell.com>
+//       Kitsilano Software Inc.
 // 
 // Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2014 Kitsilano Software Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

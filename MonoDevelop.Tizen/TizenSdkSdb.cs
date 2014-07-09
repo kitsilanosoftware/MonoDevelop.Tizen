@@ -1,4 +1,4 @@
-// Copyright 2014 Kitsilano Software Inc.
+// Copyright (c) 2014 Kitsilano Software Inc.
 //
 // This file is part of MonoTizen.
 //

@@ -9,8 +9,8 @@ using Mono.Addins.Description;
 )]
 
 [assembly:AddinName ("MonoDevelop.Tizen")]
-[assembly:AddinCategory ("MonoDevelop.Tizen")]
-[assembly:AddinDescription ("MonoDevelop.Tizen")]
+[assembly:AddinCategory ("Mobile Development")]
+[assembly:AddinDescription ("Support for developing and deploying LGPLv2-compliant applications using Mono for Tizen. If your application is not LGPLv2-compliant then you will need to purchase a commercial license from Xamarin. See http://xamarin.com/licensing.")]
 [assembly:AddinAuthor ("Kitsilano Software Inc.")]
 
 [assembly:AddinDependency ("::MonoDevelop.Core", MonoDevelop.BuildInfo.Version)]

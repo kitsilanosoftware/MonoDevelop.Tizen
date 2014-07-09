@@ -1,4 +1,4 @@
-// Copyright 2014 Kitsilano Software Inc.
+// Copyright (c) 2014 Kitsilano Software Inc.
 //
 // This file is part of MonoTizen.
 //
@@ -14,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with MonoTizen.  If not, see <http://www.gnu.org/licenses/>.
+
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Tizen
