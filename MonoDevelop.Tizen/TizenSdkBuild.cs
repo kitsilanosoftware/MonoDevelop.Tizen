@@ -38,16 +38,6 @@ namespace MonoDevelop.Tizen
 		public TizenProjectConfiguration Config { get; set; }
 		TizenSdkInfo SdkInfo { get; set; }
 
-		public static string GetArchForRuntimeBundle (string rtPath)
-		{
-			if (rtPath.EndsWith (".armv7l.zip", StringComparison.OrdinalIgnoreCase))
-				return "armel";
-			else if (rtPath.EndsWith (".i586.zip", StringComparison.OrdinalIgnoreCase))
-				return "i386";
-			else
-				return null;
-		}
-
 		public bool DoNativeBuild (IProgressMonitor monitor,
 					   BuildResult res)
 		{
@@ -84,17 +74,37 @@ namespace MonoDevelop.Tizen
 			return Path.Combine (project.BaseDirectory, subdir);
 		}
 
+		private string GetArch ()
+		{
+			var platform = Config.Platform;
+
+			if (platform.EndsWith (TizenProject.X86))
+				return TizenProject.X86;
+
+			if (platform.EndsWith (TizenProject.ARM))
+				return TizenProject.ARM;
+
+			return null;
+		}
+
 		private string EnsureMonoRuntime (IProgressMonitor monitor,
-						BuildResult res)
+						  BuildResult res)
 		{
 			var project = GetProject ();
 			if (project == null)
 				return null;
 
-			var rtPath = SdkInfo.MonoRuntimePath;
-			var arch = GetArchForRuntimeBundle (rtPath);
-			if (arch == null)
+			var arch = GetArch ();
+			string rtPath = null;
+			if (arch == TizenProject.X86)
+				rtPath = SdkInfo.MonoX86Path;
+			else if (arch == TizenProject.ARM)
+				rtPath = SdkInfo.MonoArmPath;
+			if (string.IsNullOrEmpty (rtPath) || !File.Exists (rtPath)) {
+				res.AddError (string.Format ("Cannot determine Mono runtime location for {0}",
+							     Config.Platform));
 				return null;
+			}
 
 			monitor.BeginTask (string.Format ("Unpacking Mono runtime {0}...", rtPath), 1);
 

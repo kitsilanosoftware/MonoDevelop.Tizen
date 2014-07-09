@@ -1,10 +1,12 @@
 // 
 // TizenProject.cs
 //  
-// Author:
+// Authors:
 //       Michael Hutchinson <mhutchinson@novell.com>
+//       Kitsilano Software Inc.
 // 
 // Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2014 Kitsilano Software Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +32,17 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Tizen
 {
 	
 	public class TizenProject : DotNetAssemblyProject
 	{
+		// TODO: Enum with mapping to Tizen SDK names.
+		public static readonly string X86 = "i386";
+		public static readonly string ARM = "armel";
+
 		#region Constructors
 		
 		public TizenProject ()
@@ -53,11 +60,25 @@ namespace MonoDevelop.Tizen
 		{
 			Init ();
 		}
-		
+
 		void Init ()
 		{
+			// KLUDGE: DotNetProject is hardcoded to create two configurations at
+			// startup, Debug and Release, for a single platform.  Let's fix that up.
+			var configs = new List<SolutionItemConfiguration>(Configurations);
+			var archs = new string[] { X86, ARM };
+
+			foreach (var config in configs) {
+				Configurations.Remove (config);
+
+				foreach (var arch in archs) {
+					var newConfig = config.Clone () as TizenProjectConfiguration;
+					newConfig.Platform = "Tizen_" + arch;
+					Configurations.Add (newConfig);
+				}
+			}
 		}
-		
+
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			var conf = new TizenProjectConfiguration (name);

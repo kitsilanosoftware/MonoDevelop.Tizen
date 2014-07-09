@@ -21,17 +21,20 @@ namespace MonoDevelop.Tizen
 {
 	public class TizenSdkInfo
 	{
-		public TizenSdkInfo (string sdkPath, string monoRt, string authorKey, string authorPass, string deviceId)
+		public TizenSdkInfo (string sdkPath, string monoX86, string monoArm,
+				     string authorKey, string authorPass, string deviceId)
 		{
 			this.SdkPath = sdkPath;
-			this.MonoRuntimePath = monoRt;
+			this.MonoX86Path = monoX86;
+			this.MonoArmPath = monoArm;
 			this.AuthorKey = authorKey;
 			this.AuthorKeyPassword = authorPass;
 			this.DeviceId = deviceId;
 		}
 
 		public string SdkPath           { get; set; }
-		public string MonoRuntimePath   { get; set; }
+		public string MonoX86Path       { get; set; }
+		public string MonoArmPath       { get; set; }
 		public string AuthorKey         { get; set; }
 		public string AuthorKeyPassword { get; set; }
 		public string DeviceId          { get; set; }
