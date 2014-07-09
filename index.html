@@ -60,10 +60,31 @@ via the <a href="http://developer.samsung.com/remotetestlab">Samsung Remote Test
 <img src="https://monotizen.files.wordpress.com/2014/07/hello-tizen-z.png"/>
 </p>
 
+<h3><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Installation</h3>
+
+<p>
+  <ul>
+    <li>Open MonoDevelop or Xamarin Studio.</li>
+    <li>Open the add-in Manager with <strong>Xamarin Studio | Add-in Manager ...</strong></li>
+    <li>Open the <strong>Gallery</strong> tab</li>
+    <li>Click on the drop-box arrow on the right hand side of "All repositories"</li>
+    <li>Choose <strong>Manage Repositories</strong></li>
+    <li>Click on the <strong>Add</strong> button.</li>
+    <li>Enter <strong>http://kitsilanosoftware.github.io/MonoTizen/add-in/</strong> in the <strong>Register an on-line repository</strong> text field, then press <strong>OK</strong>.</stromg></strong></li>
+    <li>You will be returned to the <strong>Add-in Repository Management</strong> dialog.   Press <strong>Close</strong>.</li>
+    <li>Back in the <strong>Add-in Manager</strong> dialog, you will see a <strong>Mobile Development</strong> tree-view container.   Click on it to expand it.</li>
+    <li>You will see the <strong>Tizen development</strong> plugin.   Click on it, then click on <strong>Install...</strong> and then the <strong>Install</strong> button again on the modal dialog which appears.</li>
+    <li>You will see the installation proceeding.   It only takes a few seconds.</li>
+    <li>In the right hand panel you will now see an <strong>Enable</strong> button.   Click it and icon in the left hand panel will switch from Gray to Green.</li>
+    <li>Close the <strong>Add-in Manager</strong> dialog.</li>
+    <li>You are DONE!</li>>
+  </ul>
+</p>
+
 <h3><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
 
 <p>
-Create a new solution of type C# | Tizen | Tizen Native Project.
+Create a new solution of type <strong>C# | Tizen | Tizen Native Project</strong>.
 </p>
   
 <p>
@@ -77,24 +98,24 @@ following:
     </li>
     <li>
         <strong>Mono Runtime Bundle</strong> (mandatory): The path to a ZIP
-        re-packaging of the MonoTizen RPMs.  You can download ready-to-use
-        bundles here: http://phio.crosstwine.com/kitsilano/mono-tizen/tarballs/add-in/runtime
-        or build your own from RPMs using the `Makefile` in:
-        https://github.com/kitsilanosoftware/MonoTizen.BuildScripts
+        re-packaging of the MonoTizen RPMs.  You can download
+        <a href="https://github.com/kitsilanosoftware/MonoTizen/tree/gh-pages/add-in/runtime">ready to use bundles</a>
+        or build your own from RPMs using
+        <a href="https://github.com/kitsilanosoftware/MonoTizen.BuildScripts">these build scripts</a>.
     </li>
     <li>
         <strong>Author Key</strong> (mandatory):
-        The `*.p12` key to use for generating
+        The <strong>*.p12</strong> key to use for generating
         native (`*.tpk`) packages;
     </li>
     <li>
         <strong>Author Key Password</strong> (mandatory):
-        Password of the `*.p12` key;
+        Password of the <strong>*.p12</strong> key;
     </li>
     <li>
         <strong>Device ID</strong> (optional):
         The ID of the target device, as provided
-        by `sdb devices`; if left empty, the native tools will use the
+        by <strong>sdb devices</strong>; if left empty, the native tools will use the
         default device.
     </li>
   
