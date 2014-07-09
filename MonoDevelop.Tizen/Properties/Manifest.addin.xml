@@ -19,7 +19,7 @@
 -->
 <Addin namespace="Tizen"
        id="Tizen"
-       name="Tizen support"
+       name="Tizen development"
        author="Kitsilano Software Inc."
        copyright="Copyright (c) 2014 Kitsilano Software Inc."
        description="Support for developing and deploying LGPLv2-compliant applications using Mono for Tizen. If your application is not LGPLv2-compliant then you will need to purchase a commercial license from Xamarin. See http://xamarin.com/licensing."
