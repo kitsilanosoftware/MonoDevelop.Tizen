@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="MonoDevelop.Tizen : MonoDevelop add-in which adds support for developing and deploying LGPLv2-compliant applications using Mono for Tizen" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>MonoDevelop.Tizen</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kitsilanosoftware/MonoDevelop.Tizen">Fork me on GitHub</a>
+
+          <h1 id="project_title">MonoDevelop.Tizen</h1>
+          <h2 id="project_tagline">MonoDevelop add-in which adds support for developing and deploying LGPLv2-compliant applications using Mono for Tizen.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kitsilanosoftware/MonoDevelop.Tizen/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kitsilanosoftware/MonoDevelop.Tizen/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+<p>
+<a href="http://monotizen.com"><img align="center" src="http://monotizen.files.wordpress.com/2014/07/256t.png?w=300" alt="256t" width="300" height="115" /></a>
+</p>
+
+<h3><a name="look-like" class="anchor" href="#look-like"><span class="octicon octicon-link"></span></a>What does it look like in MonoDevelop?</h3>
+
+<p><img src="https://monotizen.files.wordpress.com/2014/07/hello-tizen-console-app1.png"/></p>
+
+<h3>
+<a name="licensing" class="anchor" href="#licensing"><span class="octicon octicon-link"></span></a>IMPORTANT - Licensing</h3>
+
+<p>
+If your application is not LGPLv2-compliant then you will need to purchase a <a http://xamarin.com/licensing>commercial license
+from Xamarin</a> before you can legally publish your application.
+</p>
+
+<h3><a name="hello-tizen" class="anchor" href="#hello-tizen"><span class="octicon octicon-link"></span></a>Example application - HelloMonoTizenOSP</h3>
+
+<p>Our proof-on-concept application can be <a href="https://github.com/kitsilanosoftware/HelloMonoTizenOSP">forked on Github</a>.
+We will be submitting this application to the <a href="http://seller.tizenstore.com">Tizen Store</a> imminently.
+The screenshot below shows the application running on a physical <a href="http://www.engadget.com/2014/06/04/samsung-z/">Samsung Z</a> device,
+via the <a href="http://developer.samsung.com/remotetestlab">Samsung Remote Test Lab</a>.
+</p>
+
+<p>
+<img src="https://monotizen.files.wordpress.com/2014/07/hello-tizen-z.png"/>
+</p>
+
+<h3><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Installation</h3>
+
+<p>
+  <ul>
+    <li>Open <a href="http://monodevelop.com/Download">MonoDevelop</a> or <a href="http://xamarin.com/download">Xamarin Studio</a>.</li>
+    <li>Register the MonoTizen add-in repository (this step will go away soon)
+        <ul>
+            <li>Open the add-in manager with <strong>Xamarin Studio | Add-in Manager ...</strong></li>
+            <li>Open the <strong>Gallery</strong> tab</li>
+            <li>Click on the drop-box arrow on the right hand side of "All repositories"</li>
+            <li>Choose <strong>Manage Repositories</strong></li>
+            <li>Click on the <strong>Add</strong> button.</li>
+            <li>Enter <a href="http://kitsilanosoftware.github.io/MonoTizen/add-in/">http://kitsilanosoftware.github.io/MonoTizen/add-in/</a></strong> in the <strong>Register an on-line repository</strong> text field, then press <strong>OK</strong>.</stromg></strong></li>
+            <li>You will be returned to the <strong>Add-in Repository Management</strong> dialog.   Press <strong>Close</strong>.</li>
+        </ul>
+    </li>
+    <li>Install and enable the <strong>Tizen development</strong> add-in
+        <ul>
+            <li>In the <strong>Add-in Manager</strong> dialog, you will see a <strong>Mobile Development</strong> tree-view container.   Click on it to expand it.</li>
+            <li>You will see the <strong>Tizen development</strong> plugin.   Click on it, then click on <strong>Install...</strong> and then the <strong>Install</strong> button again on the modal dialog which appears.</li>
+            <li>You will see the installation proceeding.   It only takes a few seconds.</li>
+            <li>In the right hand panel you will now see an <strong>Enable</strong> button.   Click it and icon in the left hand panel will switch from Gray to Green.</li>
+            <li>Close the <strong>Add-in Manager</strong> dialog.</li>
+        </ul>
+    </li>
+    <li><strong>Xamarin Studio | Check for Updates...</strong> will automatically pick up any future changes to the add-in.</li>
+  </ul>
+</p>
+
+<h3><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
+
+<p>
+Create a new solution of type <strong>C# | Tizen | Tizen Native Project</strong>.
+</p>
+  
+<p>
+Before the first build, the Tizen add-in will prompt you for the
+following:
+
+<ul>
+    <li><strong>SDK Installation Folder</strong> (mandatory): The root of your Tizen
+    SDK installation, the SDB tool should be located at `tools/sdb` or
+    `tools/sdb.exe` relative to the chosen value;
+    </li>
+    <li>
+        <strong>Mono Runtime Bundle</strong> (mandatory): The path to a ZIP
+        re-packaging of the MonoTizen RPMs.  You can download
+        <a href="https://github.com/kitsilanosoftware/MonoTizen/tree/gh-pages/add-in/runtime">ready to use bundles</a>
+        or build your own from RPMs using
+        <a href="https://github.com/kitsilanosoftware/MonoTizen.BuildScripts">these build scripts</a>.
+    </li>
+    <li>
+        <strong>Author Key</strong> (mandatory):
+        The <strong>*.p12</strong> key to use for generating
+        native (`*.tpk`) packages;
+    </li>
+    <li>
+        <strong>Author Key Password</strong> (mandatory):
+        Password of the <strong>*.p12</strong> key;
+    </li>
+    <li>
+        <strong>Device ID</strong> (optional):
+        The ID of the target device, as provided
+        by <strong>sdb devices</strong>; if left empty, the native tools will use the
+        default device.
+    </li>
+  
+</ul>
+
+Dialog box can also be accessed via the <strong>Project | Tizen SDK Settings...</strong> menu item.
+
+<h3>Having problems?</h3>
+
+<ul>
+  <li>Log an issue <a hef="https://github.com/kitsilanosoftware/MonoDevelop.Tizen/issues">against the Github project</a></li>
+  <li>Or <a href="http://twitter.com/monotizen">Tweet us</a></li>
+</ul>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">MonoDevelop.Tizen maintained by <a href="https://github.com/kitsilanosoftware">Kitsilano Software</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
