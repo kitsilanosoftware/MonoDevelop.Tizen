@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AddinProject appVersion="2.4">
+	<Project>
+		<AddinFile>MonoDevelop.Tizen/bin/Release/MonoDevelop.Tizen.dll</AddinFile>
+		<BuildFile>MonoDevelop.Tizen.sln</BuildFile>
+		<BuildConfiguration>Release</BuildConfiguration>
+	</Project>
+</AddinProject>
