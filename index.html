@@ -50,6 +50,49 @@ If your application is not LGPLv2-compliant then you will need to purchase a <a 
 from Xamarin</a> before you can legally publish your application.
 </p>
 
+<h3><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
+
+<p>
+Create a new solution of type <strong>C# | Tizen | Tizen Native Project</strong>.
+</p>
+  
+<p>
+Before the first build, the Tizen add-in will prompt you for the
+following:
+
+<ul>
+    <li><strong>SDK Installation Folder</strong> (mandatory): The root of your Tizen
+    SDK installation, the SDB tool should be located at <strong>tools/sdb</strong> or
+    <strong>tools/sdb.exe</strong> relative to that root directory.
+    </li>
+    <li>
+        <strong>Mono Runtime Bundle</strong> (mandatory): The path to a ZIP
+        re-packaging of the MonoTizen RPMs.  You can download
+        <a href="https://github.com/kitsilanosoftware/MonoTizen/tree/gh-pages/add-in/runtime">ready to use bundles</a>
+        or build your own from RPMs using
+        <a href="https://github.com/kitsilanosoftware/MonoTizen.BuildScripts">these build scripts</a>.
+    </li>
+    <li>
+        <strong>Author Key</strong> (mandatory):
+        The <strong>*.p12</strong> key to use for generating
+        native <strong>*.tpk</strong> packages.
+    </li>
+    <li>
+        <strong>Author Key Password</strong> (mandatory) :
+        Password of the <strong>*.p12</strong> key.
+    </li>
+    <li>
+        <strong>Device ID</strong> (optional):
+        The ID of the target device, as provided
+        by <strong>sdb devices</strong>; if left empty, the native tools will use the
+        default device.
+    </li>
+  
+</ul>
+
+Dialog box can also be accessed via the <strong>Project | Tizen SDK Settings...</strong> menu item.
+
+
 <h3><a name="look-like" class="anchor" href="#look-like"><span class="octicon octicon-link"></span></a>What does it look like in MonoDevelop?</h3>
 
 <p><img src="https://monotizen.files.wordpress.com/2014/07/hello-tizen-console-app1.png"/></p>
@@ -67,48 +110,6 @@ via the <a href="http://developer.samsung.com/remotetestlab">Samsung Remote Test
 <img src="https://monotizen.files.wordpress.com/2014/07/hello-tizen-z.png"/>
 </p>
 
-
-<h3><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
-
-<p>
-Create a new solution of type <strong>C# | Tizen | Tizen Native Project</strong>.
-</p>
-  
-<p>
-Before the first build, the Tizen add-in will prompt you for the
-following:
-
-<ul>
-    <li><strong>SDK Installation Folder</strong> (mandatory): The root of your Tizen
-    SDK installation, the SDB tool should be located at `tools/sdb` or
-    `tools/sdb.exe` relative to the chosen value;
-    </li>
-    <li>
-        <strong>Mono Runtime Bundle</strong> (mandatory): The path to a ZIP
-        re-packaging of the MonoTizen RPMs.  You can download
-        <a href="https://github.com/kitsilanosoftware/MonoTizen/tree/gh-pages/add-in/runtime">ready to use bundles</a>
-        or build your own from RPMs using
-        <a href="https://github.com/kitsilanosoftware/MonoTizen.BuildScripts">these build scripts</a>.
-    </li>
-    <li>
-        <strong>Author Key</strong> (mandatory):
-        The <strong>*.p12</strong> key to use for generating
-        native (`*.tpk`) packages;
-    </li>
-    <li>
-        <strong>Author Key Password</strong> (mandatory):
-        Password of the <strong>*.p12</strong> key;
-    </li>
-    <li>
-        <strong>Device ID</strong> (optional):
-        The ID of the target device, as provided
-        by <strong>sdb devices</strong>; if left empty, the native tools will use the
-        default device.
-    </li>
-  
-</ul>
-
-Dialog box can also be accessed via the <strong>Project | Tizen SDK Settings...</strong> menu item.
 
 <h3>Having problems?</h3>
 
