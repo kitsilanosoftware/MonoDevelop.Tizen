@@ -34,7 +34,6 @@
   </Dependencies>
 
   <Runtime>
-    <Import assembly="ICSharpCode.SharpZipLib.dll"/>
     <Import assembly="MonoDevelop.Tizen.dll"/>
     <Import file="Templates/TizenNativeProject.xpt.xml"/>
     <Import file="Templates/mainmenu.png"/>
