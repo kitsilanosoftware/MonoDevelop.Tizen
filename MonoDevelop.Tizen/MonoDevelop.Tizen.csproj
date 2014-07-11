@@ -63,11 +63,7 @@
       <Package>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/Mono.Debugging.dll</Package>
     </Reference>
     <Reference Include="gtk-sharp" />
-    <Reference Include="glib-sharp" />
-    <Reference Include="gdk-sharp" />
     <Reference Include="atk-sharp" />
-    <Reference Include="pango-sharp" />
-    <Reference Include="Mono.Cairo" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
